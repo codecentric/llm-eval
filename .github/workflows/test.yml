@@ -81,7 +81,7 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        run: npm run test:coverage -- --coverageReporters=json --coverageDirectory=coverage
+        run: npm run test:coverage -- --reporter=json --outputFile=coverage/coverage-final.json
 
       - name: Upload frontend coverage report
         uses: actions/upload-artifact@v4
