@@ -53,7 +53,14 @@ jobs:
         run: poetry install --only=main,dev,test
 
       - name: Running tests
-        run: poetry run pytest --cov llm_eval tests
+        run: poetry run pytest --cov llm_eval --cov-report=xml tests
+
+      - name: Upload backend coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: ./backend/coverage.xml
+          if-no-files-found: error
 
   frontend-tests:
     name: Frontend Tests
@@ -74,4 +81,11 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        run: npm run test:coverage
+        run: npm run test:coverage -- --coverageReporters=json --coverageDirectory=coverage
+
+      - name: Upload frontend coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: ./frontend/coverage/coverage-final.json
+          if-no-files-found: error
