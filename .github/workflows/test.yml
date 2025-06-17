@@ -1,0 +1,54 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend-tests:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: pguser
+          POSTGRES_PASSWORD: pgpassword
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      PG_HOST: postgres
+      PG_USER: pguser
+      PG_PASSWORD: pgpassword
+      PG_DB: postgres
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: pgpassword
+      POSTGRES_DB: postgres
+      LLM_EVAL_ENCRYPTION_KEY: M2kbagZtWPjxfjeDio2VDH+sVH45BsUHUxHzR+hW3Ps=
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up poetry
+        run: pipx install poetry==2.1.2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'poetry'
+          cache-dependency-path: ./backend/poetry.lock
+
+      - name: Install dependencies
+        run: poetry install --only=main,dev,test
+
+      - name: Run linting
+        run: poetry run pytest --cov llm_eval tests
