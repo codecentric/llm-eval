@@ -1,0 +1,25 @@
+## Select Type
+
+Selection of the type of LLM endpoints currently supported by LLMEval.
+
+## Configuration
+
+This area contains the settings required for connecting to and using the LLM endpoint.
+
+- **Name**: A user-defined name to identify the endpoint. Use a meaningful name that reflects the model used or the purpose of the endpoint.
+- **Number of Parallel Requests**: The maximum number of concurrent requests that can be sent to this endpoint. Limits the load on the endpoint to avoid overload.
+- **Maximum Number of Retries**: How many times a request should be automatically retried if it fails (e.g., due to a network or server failure). Increases the robustness of the evaluation.
+- **Request Timeout**: The maximum time (in seconds) to wait for a response from an LLM before the request is considered failed. Avoids evaluation hang-ups with slow or unresponsive endpoints.
+- **Base URL**: The base URL of the LLM API. Make sure the URL is correct and points to the API endpoint of the LLM model. Example: `https://openrouter.ai/api/v1`
+- **API Key**: The API key required for authentication with the LLM endpoint. Protect the API key carefully! It should never be made publicly accessible.
+- **API Version**: Optionally, an API version can be specified for the call.
+- **Deployment**: Optionally, a deployment can be specified.
+- **Model**: The name of the LLM to use within the endpoint. The available models depend on the respective LLM provider. Example: `Gemini 2.0 Flash Lite` via OpenRouter.
+- **Temperature**: Parameter for determining the creativity or randomness of the results.
+- **Output Language**: Parameter for the output language of the LLM.
+
+## Important Notes
+
+- Make sure the API keys are stored securely.
+- Check the documentation of the respective LLM provider for information on the available models, parameters, and rate limits.
+- The configuration of "Number of Parallel Requests" and "Request Timeout" can significantly affect the performance and reliability of the evaluation.

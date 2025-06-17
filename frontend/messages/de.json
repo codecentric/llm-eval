@@ -1,0 +1,991 @@
+{
+  "CatalogsCard": {
+    "bestExecution": "Beste Ausführung",
+    "title": "Kataloge"
+  },
+  "ConfirmDialog": {
+    "cancelButton": "Abbrechen",
+    "errorTitle": "Fehler beim Submit des Dialogs.",
+    "okButton": "OK"
+  },
+  "ContextHelp": {
+    "closeButton": {
+      "tooltip": "Schliessen"
+    },
+    "title": "Hilfe"
+  },
+  "DashboardLastEvaluationCard": {
+    "category": {
+      "catalog": "QA-Katalog",
+      "catalogHistory": "Kataloghistorie",
+      "name": "Name",
+      "scores": "Metrikergebnisse"
+    },
+    "noEvaluation": "Es wurde bisher noch keine Auswertung ausgeführt.",
+    "title": "Letzte Auswertung"
+  },
+  "DashboardStatisticsCard": {
+    "catalogs": "Kataloge",
+    "evaluations": "Auswertungen",
+    "title": "Statistiken"
+  },
+  "DeleteCatalogModal": {
+    "cancelButton": "Abbrechen",
+    "deleteButton": "Löschen",
+    "description": "Sind Sie sicher, dass Sie diesen Katalog löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "header": "Löschung Bestätigen",
+    "showDialogButton": "Löschen"
+  },
+  "DetailsPage": {
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "noData": "Keine Daten vorhanden."
+  },
+  "DocumentationPage": {
+    "name": "Dokumentation",
+    "section": {
+      "gettingStarted": "Erste Schritte"
+    }
+  },
+  "DocumentationToc": {
+    "label": "Inhaltsverzeichnis"
+  },
+  "DownloadQACatalogModal": {
+    "action": {
+      "download": "Herunterladen",
+      "error": "Katalog konnte nicht heruntergeladen werden, bitte versuchen Sie es erneut",
+      "success": "Katalog heruntergeladen"
+    },
+    "form": {
+      "fields": {
+        "format": {
+          "label": "Format",
+          "placeholder": "Wählen Sie ein Format"
+        },
+        "includeAll": "Alle Versionen einschließen",
+        "versions": {
+          "label": "Versionen einschließen",
+          "placeholder": "Versionen auswählen"
+        }
+      }
+    },
+    "modal": {
+      "buttons": {
+        "cancel": "Abbrechen",
+        "submit": "Herunterladen"
+      },
+      "header": "QA Katalog herunterladen"
+    }
+  },
+  "EndpointConfigurationForm": {
+    "field": {
+      "apiKey": {
+        "label": "API-Schlüssel"
+      },
+      "apiVersion": {
+        "label": "API-Version"
+      },
+      "configurationId": {
+        "label": "Konfiguration-ID"
+      },
+      "deployment": {
+        "label": "Deployment"
+      },
+      "endpoint": {
+        "label": "URL"
+      },
+      "language": {
+        "label": "Ausgabe Sprache",
+        "placeholder": "Ausgabesprache des LLMs steuern.",
+        "values": {
+          "english": "Englisch",
+          "german": "Deutsch",
+          "null": "-"
+        }
+      },
+      "maxRetries": {
+        "label": "Maximale Anzahl neuer Versuche"
+      },
+      "name": {
+        "label": "Name"
+      },
+      "parallelQueries": {
+        "label": "Anzahl paralleler Anfragen"
+      },
+      "requestTimeout": {
+        "description": "Timeout in Sekunden",
+        "label": "Anfrage-Timeout"
+      }
+    }
+  },
+  "EndpointTypeSelectionForm": {
+    "select": {
+      "label": "Endpunkt Typ",
+      "placeholder": "Wähle einen Endpunkt Typ"
+    }
+  },
+  "ErrorDisplay": {
+    "internalServerError": "Ein unerwarteter Fehler ist auf dem Server aufgetreten.",
+    "reason": "Grund",
+    "statusCode": "Status Code",
+    "validationError": "Validierungsfehler"
+  },
+  "ErrorPanel": {
+    "tabs": {
+      "ariaLabel": "Fehler Tabs"
+    }
+  },
+  "EvaluationComparePage": {
+    "action": {
+      "add": "Auswertungen hinzufügen"
+    },
+    "empty": {
+      "alert": "Es sind keine Auswertungen ausgewählt. Bitte fügen sie Auswertungen zum Vergleichen hinzu."
+    },
+    "error": {
+      "evaluationLoad": "Auswertung konnte nicht geladen: {id}"
+    },
+    "name": "Auswertungen Vergleichen",
+    "shortName": "Vergleich"
+  },
+  "EvaluationDetailSummary": {
+    "generalInformation": {
+      "createdAt": "Erstellt am",
+      "numberOfTestCases": "Testfälle",
+      "qaCatalog": "QA-Katalog",
+      "qaPairCount": "QA-Paare",
+      "title": "Allgemeine Informationen"
+    },
+    "metricResults": {
+      "title": "Metrik Egebnisse"
+    },
+    "panel": {}
+  },
+  "EvaluationDetailsPage": {
+    "compare": "Vergleichen",
+    "downloadResults": "Ergebnisse herunterladen",
+    "edit": "Bearbeiten",
+    "evaluationLoadError": "Laden der Auswertung is fehl geschlagen.",
+    "evaluationLoadErrorTab": "Auswertung",
+    "tab": {
+      "overview": "Übersicht",
+      "testCases": "Testfälle"
+    },
+    "testCasesLoadError": "Laden der Testfälle ist fehl geschlagen.",
+    "testCasesLoadErrorTab": "Testfälle"
+  },
+  "EvaluationDetailsSummary": {
+    "metricResults": {},
+    "metricScores": "Metrik Punktzahlen"
+  },
+  "EvaluationEditFormWizard": {
+    "field": {
+      "name": {
+        "label": "Name"
+      }
+    },
+    "submitLabel": "Aktualisieren",
+    "update": {
+      "success": "Auswertung {name} wurde erfolgreich aktualisiert."
+    }
+  },
+  "EvaluationEditPage": {
+    "name": "Auswertung Bearbeiten: {name}",
+    "shortName": "Bearbeiten"
+  },
+  "EvaluationInformationPanel": {
+    "detailsButton": {
+      "ariaLabel": "Zeige Detailseite für Auswertung {name}",
+      "tooltip": "Details"
+    },
+    "remove": {
+      "ariaLabel": "Entfernen von Auswertung {name} vom Vergleich",
+      "tooltip": "Entfernen"
+    }
+  },
+  "EvaluationMetricsTable": {
+    "actions": {
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "view": "Details"
+    },
+    "ariaLabel": "Tabelle der Metriken",
+    "column": {
+      "actions": "Aktionen",
+      "createdAt": "Angelegt",
+      "name": "Name",
+      "type": "Typ",
+      "updatedAt": "Aktualisiert"
+    }
+  },
+  "EvaluationPage": {
+    "name": "Auswertung"
+  },
+  "EvaluationQueryForm": {
+    "from": {
+      "label": "Von"
+    },
+    "query": {
+      "placeholder": "Suche"
+    },
+    "to": {
+      "label": "Bis"
+    }
+  },
+  "EvaluationResult": {
+    "responseError": "Laden fehl geschlagen."
+  },
+  "EvaluationResultDetails": {
+    "actualOutput": "Eigentliche Ausgabe",
+    "context": "Kontext",
+    "errorTitle": "Fehler bei der Ausführung des Testfalls",
+    "expectedOutput": "Erwartete Ausgabe",
+    "input": "Eingabe",
+    "metrics": "Metriken",
+    "retrievalContext": "Abrufkontext"
+  },
+  "EvaluationResultPage": {
+    "name": "Auswertungsergebnis: {resultId}",
+    "shortName": "{resultId}"
+  },
+  "EvaluationResults": {
+    "responseError": "Das Laden der Ergebnisse ist fehl geschlagen."
+  },
+  "EvaluationResultsTable": {
+    "ariaLabel": "Liste der gefundenen Auswertungen",
+    "column": {
+      "configurationName": "Konfiguration",
+      "configurationVersion": "Version",
+      "createdAt": "Angelegt",
+      "expectedOutput": "Erwartete Ausgabe",
+      "input": "Eingabe",
+      "results": "Ergebnisse"
+    },
+    "error": "Die Suche nach Auswertungen ist fehlgeschlagen.",
+    "noResults": "Es existieren keine Ergebnisse. Führen sie ein neues Query aus.",
+    "table": {
+      "label": "Tabelle mit gruppierten Testfällen."
+    }
+  },
+  "EvaluationSelectionPopover": {
+    "dialog": {
+      "ariaLabel": "Dialog for zusätzliche Auswertung zum Vergleich"
+    }
+  },
+  "EvaluationSelectionPopoverContent": {
+    "add": "Ausgewählte Auswertungen hinzufügen",
+    "cancel": "Abbrechen",
+    "title": "Auswertungen auswählen"
+  },
+  "EvaluationsPage": {
+    "action": {
+      "compare": "Ausgewählte Auswertugnen vergleichen"
+    },
+    "name": "Auswertungen",
+    "responseError": "Auswertungen konnten nicht geladen werden."
+  },
+  "ExecutionEvaluationResultPage": {
+    "name": "Auswertungsergebnis: {resultId}",
+    "responseError": "Ergebnis konnte nicht geladen werden",
+    "shortName": "Ergebnis"
+  },
+  "ExecutionPage": {
+    "averageMetrics": "Metriken",
+    "name": "Evaluation: {name}",
+    "responseError": "Auswertungen konnten nicht geladen werden.",
+    "shortName": "{name}"
+  },
+  "ExecutionsTable": {
+    "actions": {
+      "delete": "Löschen",
+      "download": "Ergebnisse herunterladen",
+      "edit": "Bearbeiten",
+      "view": "Details"
+    },
+    "ariaLabel": "Ausführungen",
+    "column": {
+      "actions": "Aktionen",
+      "catalog": "QA-Katalog",
+      "createdAt": "Erstellt am",
+      "name": "Name",
+      "result": "Ergebnis",
+      "status": "Status"
+    }
+  },
+  "ExpandTableRowButton": {
+    "ariaLabel": {
+      "collapse": "Zusammenklappen",
+      "expand": "Aufklappen"
+    }
+  },
+  "FormWizard": {
+    "discardDialog": {
+      "description": "Das Formular befindet sich in einem ungültigen Zustand. Möchten Sie die Änderungen verwerfen und die Seite verlassen?",
+      "discardButton": "Änderungen verwerfen",
+      "header": "Änderungen verwerfen"
+    }
+  },
+  "FormWizardPage": {
+    "button": {
+      "back": "Zurück",
+      "cancel": "Abbrechen",
+      "next": "Weiter",
+      "submit": "Abschicken"
+    }
+  },
+  "GenerateQACatalog": {
+    "name": "Synthetische QA Katalog Generieren"
+  },
+  "HelpCard": {
+    "more": "Lerne mehr über Metriken →",
+    "text": "Dieses Tool hilft dir, die Qualität deines GenAI Produktes sicherzustellen. Um loszulegen, lade unter \"Kataloge\" einen neuen Frage-Antwort Katalog hoch. Für diesen kannst du dann eine Evaluation starten und eine Zusammenfassung sowie die einzelnen Ergebnisse unter \"Evaluation\" einsehen",
+    "title": "Hilfe"
+  },
+  "HomePage": {
+    "lastExecution": "Letzte Ausführung",
+    "lastExecutionDetails": "Details",
+    "name": "Home",
+    "responseError": "Dashboard Daten konnten nicht geladen werden."
+  },
+  "LLMEndpointDetailsPage": {
+    "name": "LLM Endpunkt: {name}",
+    "shortName": "{name}"
+  },
+  "LLMEndpointEditPage": {
+    "name": "LLM Endpoint Bearbeiten: {name} ",
+    "shortName": "Bearbeiten"
+  },
+  "LLMEndpointForm": {
+    "submitLabel": {
+      "create": "Endpunkt anlegen",
+      "update": "Endpunkt aktualisieren"
+    },
+    "tab": {
+      "configuration": "Konfiguration",
+      "metrics": "Metriken",
+      "type": "Typ Auswählen"
+    }
+  },
+  "LLMEndpointsPage": {
+    "name": "LLM Endpunkte",
+    "new": "Neuer Endpunkt",
+    "responseError": "Fehler beim Laden der LLM Endpunkte."
+  },
+  "LLMEndpointsTable": {
+    "actions": {
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "view": "Details"
+    },
+    "ariaLabel": "Tabelle mit LLM Endpunkten",
+    "column": {
+      "actions": "Aktionen",
+      "createdAt": "Angelegt",
+      "features": "Fähigkeiten",
+      "name": "Name",
+      "type": "Typ",
+      "updatedAt": "Aktualisiert"
+    }
+  },
+  "LanguageSelect": {
+    "ariaLabel": "Sprachauswahl",
+    "option": {
+      "de": "Deutsch",
+      "en": "Englisch"
+    }
+  },
+  "LlmEndpointDetails": {
+    "labels": {
+      "apiVersion": "API-Version",
+      "baseUrl": "Basis-URL",
+      "configurationId": "Konfiguration-ID",
+      "createdAt": "Angelegt",
+      "deployment": "Deployment",
+      "evaluationParams": "Auswertungsparameter",
+      "features": "Fähigkeiten",
+      "language": "Die Sprache, in der die Ausgaben der LLM generiert wird",
+      "maxRetries": "Maximale Anzahl neuer Versuche",
+      "metrics": "Metriken",
+      "model": "Modell",
+      "parallelQueries": "Anzahl paralleler Anfragen",
+      "requestTimeout": "Anfrage-Timeout",
+      "temperature": "Temperatur",
+      "type": "Endpunkt-Typ",
+      "updatedAt": "Aktualisiert",
+      "url": "URL"
+    }
+  },
+  "LlmEndpointFormWizard": {
+    "create": {
+      "success": "Endpunkt {name} wurde erfolgreich angelegt."
+    },
+    "update": {
+      "success": "LLM Endpunkt {name} wurde erfolgreich aktualisiert."
+    }
+  },
+  "LlmEndpointMetricsTable": {
+    "actions": {
+      "view": "Details"
+    },
+    "ariaLabel": "Tabelle mit Metriken",
+    "column": {
+      "actions": "Aktionen",
+      "name": "Name",
+      "type": "Typ"
+    }
+  },
+  "LoginButton": {
+    "text": "Einloggen mit {provider}"
+  },
+  "LoginPage": {
+    "spinner": {
+      "label": "Authentifizierung..."
+    },
+    "title": "Einloggen"
+  },
+  "MetricConfigurationForm": {
+    "field": {
+      "chatModelId": {
+        "label": "Chat Modell Endpunkt",
+        "placeholder": "Wählen Sie einen Endpunkt aus der als Chat Modell verwendet werden soll"
+      },
+      "evaluationParams": {
+        "label": "Auswertungsparameter",
+        "placeholder": "Wählen Sie einen oder mehrere Auswertungsparameter aus"
+      },
+      "evaluationSteps": {
+        "addButton": "Schritt hinzufügen",
+        "label": "Auswertungsschritte",
+        "removeButton": "Schritt entfernen"
+      },
+      "includeReason": {
+        "label": "Grund angeben"
+      },
+      "name": {
+        "label": "Name"
+      },
+      "strictMode": {
+        "label": "Strenger Modus"
+      },
+      "threshold": {
+        "label": "Schwellwert"
+      }
+    }
+  },
+  "MetricDetails": {
+    "labels": {
+      "chatModel": "Chat Modell",
+      "createdAt": "Angelegt",
+      "evaluationSteps": "Auswertungsschritte",
+      "includeReason": "Grund angeben",
+      "strictMode": "Strenger Modus",
+      "threshold": "Schwellwert",
+      "type": "Typ",
+      "updatedAt": "Aktualisiert"
+    }
+  },
+  "MetricDetailsLlmEndpointValue": {
+    "loadError": "Endpunkt ''{id}'' konnte nicht geladen werden."
+  },
+  "MetricDetailsPage": {
+    "name": "Metrik: {name}",
+    "shortName": "{name}"
+  },
+  "MetricEditPage": {
+    "name": "Metrik Bearbeiten: {name}",
+    "shortName": "Bearbeiten"
+  },
+  "MetricFormWizard": {
+    "create": {
+      "success": "Metrik {name} wurde erfolgreich angelegt."
+    },
+    "submitLabel": {
+      "create": "Metrik Anlegen",
+      "update": "Metrik Aktualisieren"
+    },
+    "tab": {
+      "configuration": "Konfiguration",
+      "type": "Typ Auswählen"
+    },
+    "update": {
+      "success": "Metrik {name} wurde erfolgreich aktualisiert."
+    }
+  },
+  "MetricHistoryChart": {
+    "series": {
+      "errors": "Fehler",
+      "failures": "Misserfolge",
+      "successes": "Erfolge"
+    }
+  },
+  "MetricResultChart": {
+    "label": {
+      "error": "Fehler",
+      "failure": "Misserfolg",
+      "success": "Erfolg"
+    }
+  },
+  "MetricResultsPanel": {
+    "title": "Metrikergebnisse"
+  },
+  "MetricScoreCharts": {
+    "boxPlot": {},
+    "distribution": {}
+  },
+  "MetricScoresBoxPlotChart": {
+    "series": {
+      "boxplot": "Box Plot",
+      "outliers": "Sonderfälle"
+    }
+  },
+  "MetricTypeSelectionForm": {
+    "select": {
+      "label": "Metriktyp",
+      "placeholder": "Wähle einen Metriktyp aus"
+    }
+  },
+  "MetricsCard": {
+    "catalog": "Katalog",
+    "improvementOverTime": "Verbesserungen von",
+    "title": "Metriken"
+  },
+  "MetricsPage": {
+    "name": "Metriken",
+    "new": "Neue Metrik"
+  },
+  "MetricsSelectionForm": {
+    "column": {
+      "name": "Name",
+      "type": "Typ"
+    },
+    "table": {
+      "ariaLabel": "Tabelle zur Auswahl der Metriken"
+    }
+  },
+  "MetricsTable": {
+    "ariaLabel": "Metrikentabelle",
+    "column": {
+      "error": "Fehler",
+      "evaluationModel": "Auswertungsmodel",
+      "name": "Name",
+      "reason": "Grund",
+      "score": "Punkte",
+      "strictMode": "Strikt",
+      "success": "Erfolg",
+      "threshold": "Schwelle"
+    }
+  },
+  "NewEvaluationForm": {
+    "field": {
+      "catalogId": {
+        "label": "QA Katalog",
+        "placeholder": "Wählen Sie einen QA Katalog aus"
+      },
+      "endpointId": {
+        "label": "LLM Endpunkt",
+        "placeholder": "Wählen Sie einen LLM Endpunkt aus"
+      },
+      "executionName": {
+        "label": "Auswertungsname"
+      },
+      "metrics": {
+        "empty": "Es existieren keine Metriken. <newLink>Neue Metrik anlegen</newLink>.",
+        "label": "Metriken auswählen"
+      },
+      "numberOfTestCases": {
+        "label": "Anzahl der Testfälle pro QA Paar"
+      }
+    }
+  },
+  "NewEvaluationFormWizard": {
+    "submitLabel": "Auswertung starten",
+    "successMessage": "Auswertung wurde erfolgreich gestartet."
+  },
+  "NewEvaluationPage": {
+    "name": "Neue Auswertung starten"
+  },
+  "NewEvaluationPageAction": {
+    "text": "Auswertung starten"
+  },
+  "NewLLMEndpointPage": {
+    "name": "Neuen Endpunkt Anlegen"
+  },
+  "NewMetricPage": {
+    "name": "Neue Metrik Anlegen"
+  },
+  "OpenAiConfigurationForm": {
+    "field": {
+      "apiKey": {
+        "label": "API-Key"
+      },
+      "baseUrl": {
+        "label": "Basis-URL"
+      },
+      "model": {
+        "label": "Modell"
+      },
+      "temperature": {
+        "label": "Temperatur"
+      }
+    }
+  },
+  "PageHeader": {
+    "hideContextHelp": "Kontexthilfe ausblenden",
+    "showContextHelp": "Kontexthilfe anzeigen"
+  },
+  "QACatalogGeneratorForm": {
+    "field": {
+      "files": {
+        "label": "Dateien"
+      },
+      "name": {
+        "label": "Katalog Name"
+      },
+      "sampleCount": {}
+    },
+    "generate": "Generieren",
+    "tab": {
+      "configuration": "Generator Konfigurieren",
+      "type": "Generator Typ Auswählen"
+    }
+  },
+  "QACatalogGeneratorTypeSelectionForm": {
+    "select": {
+      "label": "Generator Typ",
+      "placeholder": "Wähle eine generator"
+    }
+  },
+  "QACatalogPage": {
+    "cancelAll": "Alle Änderungen abbrechen",
+    "changesSaved": "Änderungen wurden erfolgreich gespeichert!",
+    "delete": "Löschen",
+    "name": "QA Katalog: {name}",
+    "navigateToGeneration": "Synthetische QA Katalog Generieren",
+    "qaCatalogDetailsLoadingError": "QA Katalog Details konnten nicht geladen werden.",
+    "qaPairsLoadingError": "QA Paare konnten nicht geladen werden.",
+    "saveAll": "Alle Änderungen speichern",
+    "saveError": "Änderungen konnten nicht gespeichert werden",
+    "shortName": "{name}",
+    "versionHistory": "Versionen",
+    "versionHistoryLabel": "Version auswählen"
+  },
+  "QACatalogPreviewTable": {
+    "action": {
+      "delete": "Löschen",
+      "detail": "Details",
+      "runExecution": "Auswertung starten"
+    },
+    "ariaLabel": "QA Kataloge",
+    "column": {
+      "actions": "Aktionen",
+      "createdAt": "Angelegt",
+      "length": "Anzahl QA Paare",
+      "name": "Name",
+      "status": "Status",
+      "updatedAt": "Aktualisiert"
+    }
+  },
+  "QACatalogsPage": {
+    "name": "QA Kataloge",
+    "qaCatalogsLoadingError": "QA Kataloge konnten nicht geladen werden"
+  },
+  "QaPairsTable": {
+    "action": {
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "undo": "Rückgängig"
+    },
+    "add": "Hinzufügen",
+    "addContext": "Kontext hinzufügen",
+    "addPair": "Neues QA-Paar hinzufügen",
+    "ariaLabel": "QA Paare",
+    "cancel": "Abbrechen",
+    "changesUndone": "Änderungen wurden rückgängig gemacht",
+    "column": {
+      "actions": "Aktionen",
+      "contexts": "Kontexte",
+      "expectedOutput": "Erwartete Ausgabe",
+      "question": "Frage"
+    },
+    "contexts": "Kontexte",
+    "editPair": "QA Paar bearbeiten",
+    "enterContexts": "Geben Sie Kontexte ein (optional)",
+    "enterExpectedOutput": "Geben Sie die erwartete Ausgabe ein",
+    "enterQuestion": "Geben Sie Ihre Frage ein",
+    "expectedOutput": "Erwartete Ausgabe",
+    "new": "Neu",
+    "question": "Frage",
+    "removeContext": "Kontext entfernen",
+    "save": "Speichern",
+    "viewPair": "QA Paar anzeigen"
+  },
+  "RagasQACatalogGeneratorConfigurationForm": {
+    "field": {
+      "llmEndpointId": {
+        "label": "LLM Endpunkt",
+        "placeholder": "Für die Generierung eine LLM Endpunkte auswählen"
+      },
+      "personas": {
+        "emptyDescription": "Noch keine Personas hinzugefügt. RAGAS wird Personas basierend auf den hochgeladenen Dokumenten generieren, wenn dieser Bereich leer gelassen wird",
+        "fields": {
+          "persona": {
+            "description": {
+              "label": "Beschreibung",
+              "placeholder": "Beschreiben Sie die Rolle der Persona"
+            },
+            "name": {
+              "label": "Name",
+              "placeholder": "Geben Sie den Namen der Persona ein"
+            }
+          }
+        },
+        "header": "Personas"
+      },
+      "queryDistribution": {
+        "description": "Passen Sie an, wie spezifisch/allgemein/breit die generierten Fragen sein sollen",
+        "header": "Wählen Sie Query-Synthesizer aus",
+        "values": {
+          "MULTI_HOP_ABSTRACT": {
+            "description": "Fragen oder Abfragen, die Informationen aus mehreren Kontexten oder Quellen auf eine eher abstrakte Weise synthetisieren.",
+            "title": "Abstrakte Mehrkontext-Abfragen"
+          },
+          "MULTI_HOP_SPECIFIC": {
+            "description": "Fragen oder Abfragen, die Informationen aus mehreren Kontexten oder Quellen erfordern, aber sich immer noch auf spezifische Details konzentrieren.",
+            "title": "Spezifische Mehrkontext-Abfragen"
+          },
+          "SINGLE_HOP_SPECIFIC": {
+            "description": "Fragen oder Abfragen, die spezifische Informationen aus einer einzigen Quelle oder einem einzigen Kontext erfordern.",
+            "title": "Spezifische Einzelkontext-Abfragen"
+          }
+        }
+      },
+      "sampleCount": {
+        "label": "Anzahl QA Paare"
+      }
+    },
+    "toggleAdvancedConfiguration": "Erweirterte Konfiguration"
+  },
+  "ScoreBoxPlotPanel": {
+    "boxPlot": {
+      "title": "Punktzahl Box Plot"
+    }
+  },
+  "ScoreDistributionPanel": {
+    "distribution": {
+      "interval": "Intervall",
+      "title": "Punktzahlenverteilung"
+    }
+  },
+  "SideBar": {
+    "sections": {
+      "title": "Sektionen"
+    }
+  },
+  "SideBarNavList": {
+    "listbox": {
+      "label": "Navigationsliste"
+    },
+    "section": {
+      "label": "Navigationsbereich mit Namen '{section}'"
+    }
+  },
+  "SideBarUserItem": {
+    "menu": {
+      "language": {
+        "text": "Sprache"
+      },
+      "logout": {
+        "text": "Abmelden"
+      },
+      "theme": {
+        "text": "Theme"
+      }
+    }
+  },
+  "SummaryCard": {
+    "lastEvaluation": "Letzte Auswertung",
+    "title": "Zusammenfassung"
+  },
+  "TestCaseButton": {
+    "ariaLabel": {
+      "failed": "Testfall mit status 'Fehlgeschlagen'",
+      "inProgress": "Testfall in Ausführung",
+      "success": "Testfall mit status 'Erfolgreich'"
+    }
+  },
+  "TestCaseGroupDetails": {
+    "actions": {
+      "view": "Details"
+    },
+    "table": {
+      "label": "Tabelle mit individuellen Testfällen für eine Gruppe."
+    }
+  },
+  "ThemeSelect": {
+    "ariaLabel": "Theme Auswahl",
+    "option": {
+      "dark": "Dunkel",
+      "light": "Hell",
+      "system": "System"
+    }
+  },
+  "TokenRefresh": {
+    "errorDialog": {
+      "description": "Bei der Aktualisierung der Zugriffsberechtigung ist ein Fehler aufgetreten. Eine erneute Anmeldung ist notwendig.",
+      "header": "Zugriffsfehler",
+      "okButton": "Erneut anmelden"
+    }
+  },
+  "UpdateUploadCatalogModal": {
+    "cancelButton": "Abbrechen",
+    "catalogCreated": "Katalog {name} wurde erfolgreich angelegt.",
+    "catalogName": "Katalogname",
+    "catalogUpdated": "Katalog {name} wurde erfolgreich aktualisiert.",
+    "catalogUploadError": "Katalog konnte nicht hochgeladen werden",
+    "chooseFile": "Wählen Sie eine QA Katalog Datei zum Hochladen aus",
+    "emptyFile": "Eine Datei soll hochgeladen werden",
+    "header": "Katalog Hochladen",
+    "pageActionButton": {
+      "update": "Katalog aktualisieren",
+      "upload": "QA Katalog hochladen"
+    },
+    "showDialogButton": "Aktualisieren",
+    "supportedFormats": "Unterstützte Formate:",
+    "unsupportedType": "Datei Format ist nicht unterstützt.",
+    "uploadButton": "Hochladen"
+  },
+  "UploadCatalogModal": {
+    "cancelButton": "Abbrechen",
+    "catalogName": "Katalogname",
+    "emptyFile": "Eine Datei soll hochgeladen werden",
+    "header": "Katalog hochladen",
+    "nameLengthError": "Katalog Name darf nicht leer sein.",
+    "showDialogButton": "QA Katalog hochladen",
+    "supportedFormats": "Unterstützte Formate:",
+    "unsupportedType": "Datei Format ist nicht unterstützt.",
+    "uploadButton": "Hochladen"
+  },
+  "YesNo": {
+    "no": "Nein",
+    "yes": "Ja"
+  },
+  "catalogGeneratorType": {
+    "RAGAS": "RAGAS"
+  },
+  "duration": {
+    "seconds": "{value, plural, one {# Sekunde} other {# Sekunden}}"
+  },
+  "evaluationParam": {
+    "actual_output": "Tatsächliche Ausgabe",
+    "context": "Kontext",
+    "expected_output": "Erwartete Ausgabe",
+    "expected_tools": "Erwartete Werkzeuge",
+    "input": "Eingabe",
+    "reasoning": "Beweisführung",
+    "retrieval_context": "Abfragekontext",
+    "tools_called": "Aufgerufene Werkzeuge"
+  },
+  "evaluationStatus": {
+    "FAILURE": "Fehlgeschlagen",
+    "PENDING": "Bevorstehend",
+    "RUNNING": "Läuft",
+    "SUCCESS": "Erledigt"
+  },
+  "executeCatalogServerAction": {
+    "errorUploading": "Fehler beim ausführen des Katalogs.",
+    "success": "Katalog erfolgreich ausgeführt."
+  },
+  "fetchCatalogs": {
+    "errorFetching": "Fehler beim Laden der Kataloge.",
+    "noCatalogsFound": "Keine Kataloge gefunden.",
+    "success": "Kataloge erfolgreich geladen."
+  },
+  "formError": {
+    "arrayMin": "Es werden mindestens {min} Einträge benötigt",
+    "int": "Die Zahl muss eine Ganzzahl sein",
+    "min": "Die Nummer muss größer oder gleich {min} sein",
+    "nan": "Der Wert muss eine Nummer sein",
+    "required": "Benötigt",
+    "selectMin": "{min, plural, one {Mindestens # Gegenstand muss ausgewählt sein} other {Mindestens # Genenstände müssen ausgewählt sein}}"
+  },
+  "llmEndpointFeature": {
+    "CHAT_MODEL": "Metrik",
+    "LLM_QUERY": "Auswertung"
+  },
+  "llmEndpointType": {
+    "AZURE_OPENAI": "Azure OpenAI",
+    "C4": "codecentric CompanyChat",
+    "OPENAI": "OpenAI"
+  },
+  "metricType": {
+    "ANSWER_RELEVANCY": "Antwortrelevanz",
+    "FAITHFULNESS": "Glaubwürdigkeit",
+    "G_EVAL": "G-Eval",
+    "HALLUCINATION": "Halluzination"
+  },
+  "page": {
+    "genericDataLoadError": "Laden der Daten fehl geschlagen"
+  },
+  "qaCatalogGenerationStatus": {
+    "FAILURE": "Fehlgeschlagen",
+    "GENERATING": "QA Paare erzeugen",
+    "READY": "Bereit"
+  },
+  "startQACatalogGeneration": {
+    "errorStarting": "Katalog Generierung konnte nicht gestartet werden",
+    "success": "Katalog Generierung erfolgreich gestartet"
+  },
+  "testCaseStatus": {
+    "EVALUATING": "Auswertung läuft",
+    "FAILURE": "Fehlgeschlagen",
+    "PENDING": "Bevorstehend",
+    "RETRIEVING_ANSWER": "Ermittle Antwort",
+    "SUCCESS": "Erledigt"
+  },
+  "unknownError": "Unbekannter Fehler",
+  "uploadFilesForCatalogGeneration": {
+    "errorUploading": "Dateien für die Generierung konnten nicht hochgeladen werden, die Generierung kann ohne diesen Schritt nicht durchgeführt werden",
+    "success": "Dateien erfolgreich hochgeladen, Generierung wird gestartet..."
+  },
+  "useEndpointDelete": {
+    "delete": {
+      "success": "LLM Endpunkt wurde erfolgreich gelöscht."
+    },
+    "deleteDialog": {
+      "description": "Durch die Bestätigung dieses Dialogs wird der Endpunkt {name} gelöscht.",
+      "header": "LLM Endpunkt löschen",
+      "okButton": "Löschen"
+    }
+  },
+  "useEvaluationDelete": {
+    "delete": {
+      "success": "Auswertung wurde erfolgreich gelöscht."
+    },
+    "deleteDialog": {
+      "description": "Durch die Bestätigung dieses Dialogs wird die Auswertung {name} gelöscht.",
+      "header": "Auswertung löschen",
+      "okButton": "Löschen"
+    }
+  },
+  "useMetricDelete": {
+    "delete": {
+      "success": "Die Metrik wurde erfolgreich gelöscht."
+    },
+    "deleteDialog": {
+      "description": "Durch die Bestätigung dieses Dialogs wird die Metrik {name} gelöscht.",
+      "header": "Metrik löschen",
+      "okButton": "Löschen"
+    }
+  },
+  "useQaCatalogDelete": {
+    "delete": {
+      "success": "Der QA Katalog wurde erfolgreich gelöscht.",
+      "error": "Der QA Katalog konnte nicht gelöscht werden."
+    },
+    "deleteDialog": {
+      "description": "Durch die Bestätigung dieses Dialogs wird der QA Katalog {name} gelöscht.",
+      "header": "QA Katalog löschen",
+      "okButton": "Löschen"
+    }
+  }
+}

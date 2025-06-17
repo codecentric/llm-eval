@@ -1,0 +1,25 @@
+## Functions
+
+Our QA catalog management system offers comprehensive functionality for creating, managing, and utilizing question-answer datasets.
+
+The system offers multiple ways to create QA catalogs. You can upload existing catalogs from external files in formats including CSV, JSON, and Excel (XLSX). This upload feature requires you to select your source file and specify a catalog name. Please note that your uploaded files must conform to the expected structure for question-answer pairs to ensure proper integration.
+
+For users who need to create new QA content, our synthetic QA catalog generation tool automatically produces question-answer pairs. When using this feature, you'll need to select a generator type, name your new catalog, and choose the source documents that will serve as the foundation for the generated content. You can specify the number of QA pairs needed, and select which Large Language Model (LLM) endpoint should be utilized for generation.
+
+All your QA catalogs are easily accessible through a comprehensive catalog list display. This interface presents catalogs in a table format with important metadata including the catalog name (which links to a detailed view), the number of QA pairs contained, creation and last-updated timestamps, and current status (either "Ready" or "Failed").
+Each catalog entry includes action buttons for common tasks: a visualization button that allows you to view and edit the catalog's questions and answers, a play button to immediately initiate an evaluation using that catalog, and a trash button for catalog deletion when needed.
+
+This integrated approach to QA catalog management streamlines the process of creating, maintaining, and utilizing question-answer datasets for your evaluation needs.
+
+## Possible Workflow
+
+1.  **Upload or Create QA Catalog**: Depending on requirements, a QA catalog can be uploaded from an existing file or generated synthetically.
+2.  **Edit QA Catalog**: Edit the QA catalog as needed to improve results.
+3.  **Checking the catalog list**: The table of catalogs gives a quick overview of the uploaded items.
+4.  **Deleting Catalogs**: If necessary, a catalog can be removed using the trash can icon.
+
+## Additional Information
+
+- **File Formats**: Note the requirements of the supported file formats (.csv, .json, .xlsx) for uploading. Make sure the files are structured correctly.
+- **Synthetic Generation**: The quality of the synthetically generated QA pairs depends heavily on the quality of the source documents and the LLM used.
+- **Status "Failed":** Investigate the cause of a failed catalog. There may be an error in the file format or a problem with the data contained.

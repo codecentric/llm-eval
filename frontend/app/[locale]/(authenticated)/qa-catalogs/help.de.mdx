@@ -1,0 +1,26 @@
+## Funktionen
+
+Unser QA-Katalog-Managementsystem bietet umfassende Funktionalität für die Erstellung, Verwaltung und Nutzung von Frage-Antwort-Datensätzen.
+
+Das System bietet mehrere Wege zur Erstellung von QA-Katalogen. Sie können bestehende Kataloge aus externen Dateien in Formaten wie CSV, JSON und Excel (XLSX) hochladen. Diese Upload-Funktion erfordert die Auswahl Ihrer Quelldatei und die Angabe eines Katalognamens. Bitte beachten Sie, dass Ihre hochgeladenen Dateien der erwarteten Struktur für Frage-Antwort-Paare entsprechen müssen, um eine ordnungsgemäße Integration zu gewährleisten.
+
+Für Benutzer, die neue QA-Inhalte erstellen müssen, erzeugt unser synthetisches QA-Katalog-Generierungstool automatisch Frage-Antwort-Paare. Bei der Verwendung dieser Funktion müssen Sie einen Generator-Typ auswählen, Ihren neuen Katalog benennen und die Quelldokumente auswählen, die als Grundlage für die generierten Inhalte dienen sollen. Sie können die Anzahl der benötigten QA-Paare festlegen und auswählen, welcher Large Language Model (LLM)-Endpunkt für die Generierung verwendet werden soll.
+
+Alle Ihre QA-Kataloge sind über eine übersichtliche Kataloglistenansicht leicht zugänglich. Diese Oberfläche präsentiert Kataloge in einem Tabellenformat mit wichtigen Metadaten, darunter der Katalogname (der zu einer detaillierten Ansicht führt), die Anzahl der enthaltenen QA-Paare, Zeitstempel für Erstellung und letzte Aktualisierung sowie den aktuellen Status (entweder "Ready" oder "Failed").
+
+Jeder Katalogeintrag enthält Aktionsschaltflächen für häufige Aufgaben: eine Visualisierungsschaltfläche, mit der Sie die Fragen und Antworten des Katalogs anzeigen und bearbeiten können, eine Wiedergabetaste, um sofort eine Auswertung mit diesem Katalog zu starten, und eine Papierkorb-Schaltfläche zum Löschen des Katalogs, wenn nötig.
+
+Dieser integrierte Ansatz für das QA-Katalog-Management vereinfacht den Prozess der Erstellung, Pflege und Nutzung von Frage-Antwort-Datensätzen für Ihre Auswertungsbedürfnisse.
+
+## Möglicher Workflow
+
+1. **QA Katalog Hochladen oder Erstellen**: Je nach Bedarf kann ein QA-Katalog aus einer bestehenden Datei hochgeladen oder synthetisch generiert werden.
+2. **QA Katalog bearbeiten**: Bearbeite bei Bedarf den QA Katalog um Ergebnisse zu verbessern.
+3. **Überprüfung der Katalogliste**: Die Tabelle der Kataloge gibt einen schnelle Überblick über die hochgeladenen Elemente.
+4. **Löschen von Katalogen**: Bei Bedarf kann ein Katalog mit dem Papierkorb-Symbol entfernt werden.
+
+## Zusätzliche Informationen
+
+- **Dateiformate**: Beachte die Anforderungen der unterstützten Dateiformate (.csv, .json, .xlsx) für den Upload. Stelle sicher, dass die Dateien korrekt strukturiert sind.
+- **Synthetische Generierung**: Die Qualität der synthetisch generierten QA-Paare hängt stark von der Qualität der Quelldokumente und dem verwendeten LLM ab.
+- **Status "Fehlgeschlagen":** Untersuche die Ursache für einen fehlgeschlagenen Katalog. Möglicherweise liegt ein Fehler beim Dateiformat oder ein Problem mit den enthaltenen Daten vor.

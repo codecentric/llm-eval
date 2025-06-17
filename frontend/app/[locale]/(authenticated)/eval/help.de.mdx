@@ -1,0 +1,48 @@
+Diese Seite ermöglicht die Durchführung von Evaluationen (Auswertungen) von LLM-Antworten anhand von konfigurierten Metriken, Frage-Antwort-Katalogen und LLM Endpunkten. Hier werden die Ergebnisse der durchgeführten Auswertungen angezeigt und verwaltet.
+
+## Funktionen
+
+- **Auswertung starten**:
+
+  - **Beschreibung**: Startet eine neue Evaluierung.
+  - **Workflow**:
+    1. Klicke auf den Button "Auswertung starten".
+    2. Wähle einen QA-Katalog aus der Liste der verfügbaren Kataloge.
+    3. Wähle einen LLM Endpunkt aus der Liste der verfügbaren Endpunkte.
+    4. Konfiguriere die Metriken, die für die Evaluierung verwendet werden sollen.
+    5. Starte die Auswertung.
+
+- **Liste der Auswertungen**:
+  - **Beschreibung**: Zeigt eine Tabelle mit den durchgeführten Auswertungen.
+  - **Spalten**:
+    - **Name**: Der Name der Auswertung. Ein Link führt zur Detailansicht der Auswertung.
+    - **QA-Katalog**: Der QA-Katalog, der für die Auswertung verwendet wurde. Ein Link führt zur Detailansicht des QA Katalogs.
+    - **Erstellt am**: Datum und Uhrzeit, wann die Auswertung gestartet wurde.
+    - **Status**: Der Status der Auswertung. Mögliche Werte: "Erledigt", "In Bearbeitung", "Fehlgeschlagen".
+    - **Ergebnis**: Ein zusammenfassendes Ergebnis der Auswertung (z.B. ein Gesamtwert oder ein Satz von Werten basierend auf den Metriken; nicht immer direkt ersichtlich, abhängig von der Implementierung). Auf der Detailseite sind das `Answer Relevancy` und `G-Eval`.
+
+## Detailansicht einer Auswertung
+
+- **Name**: Test
+- **Erstellt am**: Zeitpunkt der Erstellung.
+- **QA-Katalog**: Verwendeter QA-Katalog.
+- **Anzahl QA Paare**: Anzahl der Fragen und Antworten
+- **Answer Relevancy**: Relevanzwert
+- **G-Eval**: G-Eval Wert
+
+Für jedes QA Paar zu verwendete Konfiguration und Ergebnisse
+
+- **Konfiguration**: Für die QA Paare verwendeter LLM Endpunkt
+- **Version**: Versionsnummer
+- **Angelegt**: Zeitpunkt der Bewertung mit dem LLM-Endpunkt
+- **Eingabe**: Frage an das LLM.
+- **Erwartete Ausgabe**: erwartete Antwort im QA-Katalog.
+- **Ergebnisse**: Hier sieht man, ob die erwartete Antwort über dem gesetzten Schwellwert war (grüner Haken) oder nicht (rotes Kreuz) oder ob es ein Problem bei der Antwort gab (gelbes Dreieck).
+
+## Möglicher Workflow
+
+1. **Auswertung starten**: Beginne mit einer neuen Auswertung, indem der QA-Katalog und der LLM Endpunkt ausgewählt wird.
+2. **Überprüfen der Liste der Auswertungen**: Die Tabelle "Auswertungen" bietet einen Überblick über alle durchgeführten Auswertungen.
+3. **Anzeigen der Detailansicht**: Durch Klicken auf den Namen einer Auswertung oder den Play-Button gelangst du zur Detailansicht, welche die Ergebnisse pro QA Paar anzeigt.
+4. **Ergebnisse analysieren**: Analysiere die Ergebnisse und identifiziere Ausreißer oder Bereiche, in denen das LLM besonders gut bzw. schlecht abschneidet.
+5. **Auswertungen löschen**: Bei Bedarf können Auswertungen gelöscht werden (z.B. um die Liste aufzuräumen).

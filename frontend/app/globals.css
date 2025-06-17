@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100%;
+}
+
+@layer utilities {
+  .content-table-row {
+    @apply hover:bg-content2/50;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}

@@ -1,0 +1,60 @@
+services:
+  eval-db:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env.services
+      - .env
+    volumes:
+      - ./data/backend-db:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  keycloak-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: pgpassword
+      POSTGRES_DB: keycloak
+    volumes:
+      - ./data/keycloak-db:/var/lib/postgresql/data
+    networks:
+      - keycloak
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.5
+    command: start-dev --import-realm
+    ports:
+      - "8080:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: pguser
+      KC_DB_PASSWORD: pgpassword
+    volumes:
+      # comment out if no default user should be created
+      - ./data/import/keycloak:/opt/keycloak/data/import
+    depends_on:
+      - keycloak-db
+    networks:
+      - keycloak
+
+  rabbit-mq:
+    image: rabbitmq:4.0-management
+    ports:
+      - "5672:5672"
+      - "15672:15672" # UI
+    env_file:
+      - .env.services
+      - .env
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq/mnesia/
+    networks:
+      - backend
+
+networks:
+  keycloak:
+  backend:

@@ -1,0 +1,25 @@
+## Typ Auswählen
+
+Auswahl der von LLMEval derzeit unterstützten Typen von LLM-Endpunkten.
+
+## Konfiguration
+
+Dieser Bereich enthält die Einstellungen, die für die Verbindung und Nutzung des LLM-Endpunkts erforderlich sind.
+
+- **Name**: Ein benutzerdefinierter Name zur Identifizierung des Endpunkts. Verwende einen aussagekräftigen Namen, der das verwendete Modell oder den Zweck des Endpunkts widerspiegelt.
+- **Anzahl paralleler Anfragen**: Die maximale Anzahl gleichzeitiger Anfragen, die an diesen Endpunkt gesendet werden können. Begrenzt die Last auf den Endpunkt, um Überlastung zu vermeiden.
+- **Maximale Anzahl neuer Versuche**: Wie oft eine Anfrage automatisch wiederholt werden soll, wenn sie fehlschlägt (z.B. aufgrund einer Netzwerk- oder Serverstörung). Erhöht die Robustheit der Evaluierung.
+- **Anfrage-Timeout**: Die maximale Zeit (in Sekunden), die auf eine Antwort von einem LLM gewartet wird, bevor die Anfrage als fehlgeschlagen gewertet wird. Vermeidet das Aufhängen der Evaluierung bei langsamen oder nicht reagierenden Endpunkten.
+- **URL**: Die Basis-URL der LLM-API. Stelle sicher, dass die URL korrekt ist und auf den API-Endpunkt des LLM-Modells verweist. Beispiel: `https://openrouter.ai/api/v1`
+- **API-Schlüssel**: Der API-Schlüssel, der für die Authentifizierung beim LLM-Endpunkt erforderlich ist. Schütze den API-Schlüssel sorgfältig! Er sollte niemals öffentlich zugänglich gemacht werden.
+- **API-Version**: Optional kann eine API-Version für den Aufruf angegeben werden.
+- **Deployment**: Optional kann ein Deployment angegeben werden.
+- **Model**: Der Name des zu verwendenden LLM innerhalb des Endpunkts. Die verfügbaren Modelle hängen vom jeweiligen LLM-Anbieter ab. Beispiel: `Gemini 2.0 Flash Lite` via OpenRouter.
+- **Temperatur**: Parameter für Festlegung der Kreativität bzw. Zufälligkeit der Ergebnisse.
+- **Ausgabe Sprache**: Parameter für die Ausgabesprache des LLMs.
+
+## Wichtige Hinweise
+
+- Stelle sicher, dass die API-Schlüssel sicher verwahrt werden.
+- Überprüfe die Dokumentation des jeweiligen LLM-Anbieters für Informationen zu den verfügbaren Modellen, Parametern und Ratenbegrenzungen.
+- Die Konfiguration der "Anzahl paralleler Anfragen" und des "Anfrage-Timeout" kann die Leistung und Zuverlässigkeit der Evaluierung erheblich beeinflussen.

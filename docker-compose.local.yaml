@@ -1,0 +1,61 @@
+# Application services to run in combination with docker-compose.yaml
+# to start the whole LLMEval system locally without any other dependency
+services:
+  backend:
+    image: llm-eval-backend:compose
+    build: # TODO use registry image
+      context: backend
+      dockerfile: Dockerfile
+      args:
+        REMOTE_UID: ${REMOTE_UID:-1000}
+        REMOTE_GID: ${REMOTE_GID:-1000}
+    ports:
+      - "8070:8070"
+    env_file:
+      - .env.services
+      - .env
+    depends_on:
+      - eval-db
+      - keycloak
+      - rabbit-mq
+    environment:
+      RUN_IN_CONTAINER: True
+      DEEPEVAL_UPDATE_WARNING_OPT_OUT: YES
+      FILE_UPLOAD_TEMP_LOCATION: /data/tmp
+    networks:
+      - keycloak
+      - backend
+    volumes:
+      - ./data/uploaded_files:/data/tmp
+    entrypoint: ["/venv/bin/uvicorn", "llm_eval.main:app", "--host", "0.0.0.0", "--port", "8070"]
+
+  backend-worker:
+    image: llm-eval-backend:compose
+    env_file:
+      - .env.services
+      - .env
+    depends_on:
+      - eval-db
+      - rabbit-mq
+    environment:
+      RUN_IN_CONTAINER: True
+      DEEPEVAL_UPDATE_WARNING_OPT_OUT: YES
+      FILE_UPLOAD_TEMP_LOCATION: /data/tmp
+    networks:
+      - backend
+    volumes:
+      - ./data/uploaded_files:/data/tmp
+    entrypoint: ["/venv/bin/celery", "-A", "llm_eval.tasks", "worker", "--loglevel=INFO", "--concurrency=1"]
+
+  frontend:
+    image: llm-eval-frontend:compose # TODO use registry image
+    build:
+      context: frontend
+    env_file:
+      - .env.services
+      - .env
+    environment:
+      AUTH_TRUST_HOST: true
+    depends_on:
+      - backend
+    network_mode: "host"

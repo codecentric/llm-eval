@@ -1,0 +1,29 @@
+# data dir
+data/
+
+# IDE
+.idea/
+.vscode/
+
+# temp files
+.temp*
+temp_*
+.deepeval*
+
+# other stuff
+.DS_Store
+.python-version
+.deepeval
+
+.env*
+docker-compose.yaml
+.pre-commit-config.yaml
+*.Dockerfile
+
+.dockerignore
+.gitignore
+.git/
+*.http
+
+http-client.env.json
+http-client.private.env.json

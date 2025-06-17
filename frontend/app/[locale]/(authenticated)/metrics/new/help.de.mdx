@@ -1,0 +1,53 @@
+## Typ auswählen
+
+Hier wird der Typ der Metrik ausgewählt. Vorhandene Optionen sind:
+
+- G-Eval
+- Answer Relevancy (Antwortrelevanz)
+- Glaubwürdigkeit
+- Halluzination
+
+## Konfiguration
+
+Dieser Bereich ändert sich dynamisch, je nachdem welcher Metriktyp in Schritt 1 ausgewählt wurde. Enthält folgende Felder:
+
+- **Name**: Ein benutzerdefinierter Name für die Metrik. Dient zur Identifizierung in Auswertungen.
+- **Schwellwert**: Ein numerischer Wert, der als Mindestwert (oder Maximalwert, je nach Metrik) für die Erfüllung des Qualitätskriteriums dient. Der Schwellwert muss relativ zum Wertebereich der jeweiligen Metrik gewählt werden. Für "Answer Relevancy" ist ein Wert von 0.5 wahrscheinlich sinnvoll, da die Metrik vermutlich Werte zwischen 0 und 1 liefert.
+- **Strenger Modus**: Ein binärer Wert (Ja/Nein), der das Verhalten der Metrik beeinflusst. Bei "Ja" greifen strenger Kriterien während der Bewertung. Die genaue Bedeutung hängt vom gewählten Metriktyp ab.
+- **Auswertungsschritte**: (Nur bei G-Eval) Eine Liste von Aussagen, die die Kriterien für die Bewertung der LLM-Antwort beeinflussen. Die Auswahl bestimmt, welche Aspekte der Antwort priorisiert werden (etwa Faktentreue, Detaillierungsgrad und Vermeidung vager Sprache). Durch Hinzufügen oder Entfernen einzelner Schritte kann die Bewertung der Ergebnisse beeinflusst werden.
+- **Auswertungsparameter**
+- **Chat Modell Endpoint**: Auswahl eines konfigurierten LLM-Endpoints, der für die Auswertung verwendet werden soll. Hier muss ein passender Endpunkt ausgewählt werden, der für die gewünschte Metrik geeignet ist.
+- **Schwellwert**
+- **Grund angeben**
+- **Strenger Modus**
+
+(Nur bei G-Eval) Zuordnung der Parameter, die bei der Auswertung herangezogen werden soll. Folgende Parameter stehen zur Auswahl:
+
+- **Eingabe**: Die Eingabe, die dem LLM gegeben wurde.
+- **Tatsächliche Ausgabe**: Ausgabe, die vom LLM generiert wurde.
+- **Erwartete Ausgabe**: Die erwartete Ausgabe des LLM
+- **Kontext**: zusätzlicher Kontext, der bei der Auswertung einbezogen werden soll.
+- **Abfragekontext**: beschreibt den Kontext der Abfrage
+- **Erwartete Werkzeuge**
+- **Aufgerufene Werkzeuge**
+- **Beweisführung**
+
+## Erläuterung der Metriktypen
+
+### G-Eval (GPT-basierte Evaluierung)
+
+Nutzt ein weiteres LLM (z.B. GPT-4), um die Qualität der Antwort des primären LLM zu bewerten. Das "Bewertungs-LLM" erhält die Frage, die Antwort des primären LLM und ggf. eine Referenzantwort. Es gibt dann ein Scoring ab, welches die Qualität der primären Antwort widerspiegelt. Diese Metrik bewertet die Gesamtqualität der Antwort. Dies umfasst Aspekte wie Relevanz, Kohärenz, Genauigkeit, Vollständigkeit und Stil. G-Eval ist flexibel und kann an verschiedene Domänen und Anforderungen angepasst werden. Die Anpassung erfolgt über die Auswertungsschritte.
+
+### Answer Relevancy (Antwortrelevanz)
+
+Misst, wie gut die Antwort des LLM die gestellte Frage beantwortet. Algorithmen wie Textähnlichkeits-Scores (z.B. Cosinus-Ähnlichkeit von Embeddings) oder vortrainierte Modelle zur Bewertung der Relevanz können verwendet werden. Diese Metrik stellt sicher, dass das LLM nicht am Thema vorbei antwortet oder irrelevante Informationen liefert.
+
+### Glaubwürdigkeit
+
+Bewertet, wie glaubwürdig die LLM-Antwort ist. Kann auf externen Wissensquellen (z.B. Wissensdatenbanken, APIs) basieren, um die Fakten in der Antwort zu überprüfen. Diese Metrik beurteilt, ob die Antwort des LLM vertrauenswürdig, fundiert und von hoher Qualität ist. Vermeidet Antworten, die Spekulationen oder Meinungen beinhalten.
+
+### Halluzination
+
+Misst, ob das LLM Fakten erfindet oder unzutreffende Informationen in seine Antwort einbezieht. Methoden zur Erkennung von Halluzinationen können Faktencheck-APIs oder den Vergleich mit Referenztexten umfassen. Diese Metrik verhindert, dass das LLM falsche oder irreführende Informationen generiert. Besonders wichtig in Anwendungen, in denen Genauigkeit entscheidend ist.
+
+> Wichtig: Die Definition der Metriken ist abhängig vom jeweiligen Anwendungsfall. LLMEval bietet lediglich die Möglichkeit, die von LLMs generierten Inhalte anhand dieser Metriken zu bewerten.

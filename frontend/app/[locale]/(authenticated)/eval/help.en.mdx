@@ -1,0 +1,48 @@
+This page allows you to perform evaluations of LLM responses based on configured metrics, question-answer catalogs, and LLM endpoints. Here, the results of the evaluations performed are displayed and managed.
+
+## Functions
+
+- **Start Evaluation**:
+- **Description**: Starts a new evaluation.
+- **Workflow**:
+
+  1.  Click on the "Start Evaluation" button.
+  2.  Select a QA catalog from the list of available catalogs.
+  3.  Select an LLM endpoint from the list of available endpoints.
+  4.  Configure the metrics to be used for the evaluation.
+  5.  Start the evaluation.
+
+- **List of Evaluations**:
+  - **Description**: Displays a table with the conducted evaluations.
+  - **Columns**:
+    - **Name**: The name of the evaluation. A link leads to the detail view of the evaluation.
+    - **QA Catalog**: The QA catalog that was used for the evaluation. A link leads to the detail view of the QA catalog.
+    - **Created at**: Date and time when the evaluation was started.
+    - **Status**: The status of the evaluation. Possible values: "Done", "In Progress", "Failed".
+    - **Result**: A summary result of the evaluation (e.g. an overall value or a set of values based on the metrics; not always directly apparent, depending on the implementation). On the detail page are `Answer Relevancy ` and `G-Eval`.
+
+## Detail View of an Evaluation
+
+- **Name**: Test
+- **Created at**: Time of creation.
+- **QA Catalog**: QA catalog used.
+- **Number of QA Pairs**: Number of questions and answers
+- **Answer Relevancy**: Relevancy value
+- **G-Eval**: G-Eval Value
+
+Configuration and results used for each QA pair
+
+- **Configuration**: LLM endpoint used for QA pairs
+- **Version**: Version number
+- **Created**: Time of evaluation with the LLM endpoint
+- **Input**: Question to the LLM.
+- **Expected Output**: expected answer in the QA catalog.
+- **Results**: Here you can see whether the expected answer was above the given threshold (green check mark) or not (red cross) or whether there was a problem with the answer (yellow triangle).
+
+## Possible Workflow
+
+1.  **Start Evaluation**: Start with a new evaluation by selecting the QA catalog and the LLM endpoint.
+2.  **Review the list of evaluations**: The "Evaluations" table provides an overview of all evaluations performed.
+3.  **Display the detail view**: By clicking on the name of an evaluation or the play button, you get to the detail view, which displays the results per QA pair.
+4.  **Analyze Results**: Analyze the results and identify outliers or areas where the LLM performs particularly well or poorly.
+5.  **Delete evaluations**: If necessary, evaluations can be deleted (e.g. to clean up the list).

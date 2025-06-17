@@ -1,0 +1,9 @@
+[report]
+exclude_also =
+    ^\s*import
+    ^\s*from
+    ^\s*pass
+    ^\s*return\s*$
+    ^\s*raise\s*$
+    ^\s*if __name__ == .__main__.:
+    ^\s*"""[\s\S]*?"""
