@@ -5,9 +5,8 @@ permissions:
   packages: write
 
 on:
-  push:
-    branches:
-      - 'main'
+  release:
+    types: [created]
 
 jobs:
   build:
