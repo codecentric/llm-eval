@@ -150,7 +150,6 @@ describe("Synthetic QA Catalog Generation Page", () => {
         ],
         sampleCount: 5,
         knowledgeGraphLocation: null,
-        useExistingKnowledgeGraph: true,
       },
       modelConfigSchema: {
         type: "RAGAS",
@@ -176,7 +175,6 @@ describe("Synthetic QA Catalog Generation Page", () => {
         ],
         sampleCount: 5,
         knowledgeGraphLocation: null,
-        useExistingKnowledgeGraph: true,
       },
       modelConfigSchema: {
         type: "RAGAS",

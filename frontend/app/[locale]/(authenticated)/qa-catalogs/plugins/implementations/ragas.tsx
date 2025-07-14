@@ -306,7 +306,6 @@ export const ragasGeneratorPlugin = createQACatalogGenerationPlugin({
       queryDistribution: getDefaultSynthesizerValues(),
       personas: [],
       knowledgeGraphLocation: null,
-      useExistingKnowledgeGraph: true,
     },
     modelConfig: { llmEndpoint: null },
   }),
