@@ -1,15 +1,8 @@
+import inspect
 import math
-import traceback
-from copy import copy
 from hashlib import md5
 from typing import Callable, Coroutine, get_args, override
 
-from anyio import (
-    CapacityLimiter,
-    create_memory_object_stream,
-    create_task_group,
-)
-from anyio.streams.memory import MemoryObjectSendStream
 from langchain_community.document_loaders import DirectoryLoader
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -25,10 +18,23 @@ from ragas.testset.synthesizers import (
     MultiHopSpecificQuerySynthesizer,
     SingleHopSpecificQuerySynthesizer,
 )
-from ragas.testset.synthesizers.generate import LangchainLLMWrapper
+from ragas.testset.synthesizers.generate import (
+    LangchainLLMWrapper,
+)
 from ragas.testset.synthesizers.testset_schema import Testset
-from ragas.testset.transforms import apply_transforms, default_transforms
-from ragas.testset.transforms.default import num_tokens_from_string
+from ragas.testset.transforms import (
+    EmbeddingExtractor,
+    HeadlinesExtractor,
+    HeadlineSplitter,
+    KeyphrasesExtractor,
+    SummaryExtractor,
+    apply_transforms,
+)
+from ragas.testset.transforms.default import (
+    NERExtractor,
+    num_tokens_from_string,
+)
+from typing_extensions import deprecated
 
 from llm_eval.qa_catalog.generator.implementation.QACatalogGeneratorTypes import (  # noqa: E501
     QACatalogGeneratorType,
@@ -48,7 +54,6 @@ from llm_eval.qa_catalog.generator.interface import (
     QACatalogGeneratorDataSourceConfig,
     QACatalogGeneratorLocalModelConfig,
 )
-from llm_eval.qa_catalog.graph_utils import create_backup
 from llm_eval.qa_catalog.synthetic_qa_pair import SyntheticQAPair
 from llm_eval.settings import SETTINGS
 from llm_eval.utils.decorators import retry_on_error
@@ -62,6 +67,19 @@ query_synthesizer_classes: dict[
     RagasQACatalogQuerySynthesizer.MULTI_HOP_SPECIFIC: MultiHopSpecificQuerySynthesizer,
     RagasQACatalogQuerySynthesizer.MULTI_HOP_ABSTRACT: MultiHopAbstractQuerySynthesizer,
 }
+
+query_synthesizer_classes_reverse: dict[
+    type[BaseSynthesizer], RagasQACatalogQuerySynthesizer
+] = {v: k for k, v in query_synthesizer_classes.items()}
+
+
+def has_parameter(cls: type, param_name: str) -> bool:
+    """Check if a class constructor has a specific parameter."""
+    try:
+        signature = inspect.signature(cls.__init__)
+        return param_name in signature.parameters
+    except Exception:
+        return False
 
 
 class RagasQACatalogGenerator(
@@ -100,7 +118,10 @@ class RagasQACatalogGenerator(
             raise RuntimeError(_msg)
 
         self.embeddings = LangchainEmbeddingsWrapper(azure_settings.to_embeddings())
-        if not self.config.knowledge_graph_location:
+        if (
+            not self.config.knowledge_graph_location
+            and self.config.use_existing_knowledge_graph
+        ):
             self.config.knowledge_graph_location = (
                 SETTINGS.file_upload_temp_location / "knowledge_graph_ragas.json"
             )
@@ -138,10 +159,14 @@ class RagasQACatalogGenerator(
         docs = loader.load()
         return docs
 
-    def _create_document_nodes(self, docs: list[Document]) -> list[Node]:
+    def _create_knowledge_graph_nodes(
+        self,
+        docs: list[Document],
+        node_type: NodeType = NodeType.DOCUMENT,
+    ) -> list[Node]:
         return [
             Node(
-                type=NodeType.DOCUMENT,
+                type=node_type,
                 properties={
                     "page_content": doc.page_content,
                     "document_metadata": doc.metadata,
@@ -185,20 +210,24 @@ class RagasQACatalogGenerator(
         Therefore if the document is large enough, we split it into proper subdocuments.
 
         """
+
+        def _split(doc: Document, token_length: int) -> list[Document]:
+            chunk_size = math.ceil(token_length / 2)
+            chunk_overlap = math.ceil(chunk_size * 0.5)
+            splitter = RecursiveCharacterTextSplitter(
+                chunk_size=chunk_size,
+                chunk_overlap=chunk_overlap,
+                length_function=num_tokens_from_string,
+            )
+            return splitter.split_documents([doc])
+
         _docs = []
         split_occurred = False
         for doc in docs:
             token_length = num_tokens_from_string(doc.page_content)
             if token_length > 100_000:
                 split_occurred = True
-                chunk_size = math.ceil(token_length / 2)
-                chunk_overlap = math.ceil(chunk_size * 0.5)
-                splitter = RecursiveCharacterTextSplitter(
-                    chunk_size=chunk_size,
-                    chunk_overlap=chunk_overlap,
-                    length_function=num_tokens_from_string,
-                )
-                _docs.extend(splitter.split_documents([doc]))
+                _docs.extend(_split(doc, token_length))
             else:
                 _docs.append(doc)
 
@@ -208,16 +237,35 @@ class RagasQACatalogGenerator(
             return _docs
 
     def apply_knowledge_graph_transformations(
-        self, kg: KnowledgeGraph, docs: list[Document]
+        self,
+        kg: KnowledgeGraph,
     ) -> None:
-        apply_transforms(
-            kg,
-            default_transforms(
-                self.split_documents(docs),
-                llm=self.llm,
-                embedding_model=self.embeddings,
-            ),
+        headline_extractor = HeadlinesExtractor(llm=self.llm, max_num=20)
+        headline_splitter = HeadlineSplitter(max_tokens=1500, min_tokens=100)
+        keyphrase_extractor = KeyphrasesExtractor(llm=self.llm)
+
+        summary = SummaryExtractor(llm=self.llm)
+        summary_emb_extractor = EmbeddingExtractor(
+            embedding_model=self.embeddings,
+            property_name="summary_embedding",
+            embed_property_name="summary",
         )
+
+        ner_extractor = NERExtractor(
+            llm=self.llm,
+            property_name="entities",
+        )
+
+        transforms = [
+            headline_extractor,
+            headline_splitter,
+            keyphrase_extractor,
+            summary,
+            summary_emb_extractor,
+            ner_extractor,
+        ]
+
+        apply_transforms(kg, transforms=transforms)
 
     def create_knowledge_graph(self) -> KnowledgeGraph:
         """
@@ -231,41 +279,28 @@ class RagasQACatalogGenerator(
         if len(docs) == 0:
             raise RuntimeError("No documents found")
 
-        loaded_knowledge_graph = self.load_knowledge_graph()
-        new_nodes = self._create_document_nodes(docs)
-        if loaded_knowledge_graph and self._has_same_nodes(
-            loaded_knowledge_graph.nodes, new_nodes
-        ):
-            logger.info("Using the existent knowledge graph")
-            kg = loaded_knowledge_graph
-        else:
-            logger.info("Generating a new knowledge graph")
-            kg = KnowledgeGraph(nodes=new_nodes)
-            self.apply_knowledge_graph_transformations(kg, docs)
-            if self.config.knowledge_graph_location:
-                create_backup(
-                    self.config.knowledge_graph_location
-                )  # backup the old kg config
-                kg.save(
-                    self.config.knowledge_graph_location
-                )  # save the new kg to system
-                logger.info(
-                    f"Knowledge graph saved to {self.config.knowledge_graph_location}"
-                )
+        chunks = self.split_documents(docs)
+        kg = KnowledgeGraph(
+            nodes=self._create_knowledge_graph_nodes(chunks),
+        )
+
+        self.apply_knowledge_graph_transformations(kg)
 
         return kg
 
-    def load_knowledge_graph(self) -> KnowledgeGraph | None:
+    @deprecated("Until we have a better way to handle knowledge graph caching")
+    def load_exiting_knowledge_graph(
+        self,
+        docs: list[Document],
+    ) -> KnowledgeGraph | None:
         if not self.config.knowledge_graph_location:
             return None
-
-        knowledge_graph: KnowledgeGraph | None = None
 
         if not self.config.knowledge_graph_location.exists():
             logger.info(
                 f"No knowledge graph found at {self.config.knowledge_graph_location}"
             )
-            return knowledge_graph
+            return None
 
         logger.info(f"Knowledge graph found at {self.config.knowledge_graph_location}")
         try:
@@ -276,52 +311,70 @@ class RagasQACatalogGenerator(
                 self.config.knowledge_graph_location.absolute().with_suffix(".bak")
             )
 
-        return knowledge_graph
+        new_nodes = self._create_knowledge_graph_nodes(docs)
+        if knowledge_graph and self._has_same_nodes(knowledge_graph.nodes, new_nodes):
+            return knowledge_graph
+
+        return None
+
+    def create_query_distribution(
+        self,
+        knowledge_graph: KnowledgeGraph,
+        sample_count: int,
+    ) -> list[tuple[BaseSynthesizer, float]]:
+        properties = ["headlines", "keyphrases", "entities"]
+
+        selected_synthesizer_classes = (
+            query_synthesizer_classes[q] for q in self.config.query_distribution.keys()
+        )
+
+        synthesizers = []
+        for synthesizer_class in selected_synthesizer_classes:
+            if has_parameter(synthesizer_class, "property_name"):
+                for property_name in properties:
+                    synthesizers.append(
+                        synthesizer_class(
+                            llm=self.llm,
+                            property_name=property_name,  # type: ignore
+                        )
+                    )
+            else:
+                synthesizers.append(synthesizer_class(llm=self.llm))
+
+        available_queries = []
+        for query in synthesizers:
+            if query.get_node_clusters(knowledge_graph):
+                available_queries.append(query)
+
+        return [(query, 1 / len(available_queries)) for query in available_queries]
 
     @retry_on_error((Exception,), 3)
     def generate_testset(
         self,
         generator: TestsetGenerator,
-        count: int,
+        sample_count: int,
+        query_distribution: list[tuple[BaseSynthesizer, float]],
     ) -> Testset:
-        return generator.generate(
-            count,
-            query_distribution=[
-                (query_synthesizer_classes[synthesizer_type](llm=self.llm), weight)
-                for synthesizer_type, weight in self.config.query_distribution.items()
-                if weight > 0
-            ],
-        )
+        if len(query_distribution) == 0:
+            raise ValueError("No query distribution provided")
 
-    async def _generate_single_sample(
-        self,
-        generator: TestsetGenerator,
-        send_sample: MemoryObjectSendStream[SyntheticQAPair],
-        limiter: CapacityLimiter,
-    ) -> None:
-        try:
-            async with limiter:
-                testset = self.generate_testset(generator, 1)
-                if testset.samples:
-                    async with send_sample:
-                        for testset_sample in testset.samples:
-                            sample = ragas_sample_to_synthetic_qa_pair(testset_sample)
-                            await send_sample.send(sample)
-                else:
-                    logger.error(f"empty testset {testset.samples} {testset.to_list()}")
-        except Exception as e:
-            logger.error(
-                f"Error generating sample: {e}\nTraceback: {traceback.format_exc()}"
-            )
+        return generator.generate(
+            sample_count,
+            query_distribution,
+        )
 
     async def a_create_synthetic_qa(
         self,
         process_sample: Callable[[SyntheticQAPair], Coroutine],
     ) -> None:
-        limiter = CapacityLimiter(SETTINGS.ragas.parallel_generation_limit)
-        send_sample, receive_sample = create_memory_object_stream[SyntheticQAPair]()
-
         kg = self.create_knowledge_graph()
+
+        if not self.personas:
+            from ragas.testset.persona import generate_personas_from_kg
+
+            self.personas = generate_personas_from_kg(kg, self.llm)
+            if not self.personas:
+                raise ValueError("Failed to generate personas")
 
         logger.info(f"Generating {self.config.sample_count} QA pairs")
 
@@ -332,20 +385,21 @@ class RagasQACatalogGenerator(
             persona_list=self.personas,
         )
 
-        async with create_task_group() as tg:
-            async with send_sample:
-                for _ in range(self.config.sample_count):
-                    tg.start_soon(
-                        self._generate_single_sample,
-                        copy(generator),
-                        send_sample.clone(),
-                        limiter,
-                    )
+        query_distribution = self.create_query_distribution(
+            kg, self.config.sample_count
+        )
 
-            async with receive_sample:
-                logger.info("Waiting for generated qa samples")
-                async for sample in receive_sample:
-                    await process_sample(sample)
+        testset = self.generate_testset(
+            generator,
+            self.config.sample_count,
+            query_distribution,
+        )
+        if not testset.samples:
+            raise ValueError("Empty testset")
+
+        for testset_sample in testset.samples:
+            sample = ragas_sample_to_synthetic_qa_pair(testset_sample)
+            await process_sample(sample)
 
         logger.info(f"Generated {self.config.sample_count} QA sample sets")
 

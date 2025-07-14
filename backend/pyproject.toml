@@ -45,6 +45,7 @@ ruff = "^0.11.2"
 langchain-chroma = "^0.1.2" # just needed for local query
 debugpy = "^1.8.8"
 black = "^24.10.0"
+flower = "^2.0.1"
 
 
 [tool.poetry.group.test.dependencies]

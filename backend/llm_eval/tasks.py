@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 
 from celery import Celery
 from celery.bootsteps import StartStopStep
@@ -18,12 +19,12 @@ READINESS_FILE = Path(SETTINGS.celery.readiness_file)
 class LivenessProbe(StartStopStep):
     requires = {"celery.worker.components:Timer"}
 
-    def __init__(self, parent: any, **kwargs: dict[str, any]) -> None:
+    def __init__(self, parent, **kwargs: dict[str, Any]) -> None:  # noqa: ANN001
         super().__init__(parent, **kwargs)
         self.requests = []
         self.tref = None
 
-    def start(self, parent: any) -> None:
+    def start(self, parent) -> None:  # noqa: ANN001
         self.tref = parent.timer.call_repeatedly(
             1.0,
             self._update_heartbeat_file,
@@ -31,21 +32,21 @@ class LivenessProbe(StartStopStep):
             priority=10,
         )
 
-    def stop(self, parent: any) -> None:
+    def stop(self, parent) -> None:  # noqa: ANN001
         HEARTBEAT_FILE.unlink(missing_ok=True)
 
     # noinspection PyMethodMayBeStatic
-    def _update_heartbeat_file(self, parent: any) -> None:
+    def _update_heartbeat_file(self, parent) -> None:  # noqa: ANN001
         HEARTBEAT_FILE.touch()
 
 
 @worker_ready.connect
-def worker_ready(**_: dict[str, any]) -> None:
+def _worker_ready(**_: dict[str, Any]) -> None:
     READINESS_FILE.touch()
 
 
 @worker_shutdown.connect
-def worker_shutdown(**_: dict[str, any]) -> None:
+def _worker_shutdown(**_: dict[str, Any]) -> None:
     READINESS_FILE.unlink(missing_ok=True)
 
 
