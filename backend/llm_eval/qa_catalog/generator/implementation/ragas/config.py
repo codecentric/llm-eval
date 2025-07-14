@@ -29,6 +29,8 @@ class RagasQACatalogGeneratorConfig(QACatalogGeneratorConfig[RagasGeneratorType]
     query_distribution: dict[RagasQACatalogQuerySynthesizer, float]
     personas: list[RagasQACatalogGeneratorPersona] | None
 
+    use_existing_knowledge_graph: bool = True
+
 
 class RagasQACatalogGeneratorModelConfigSchema(
     QACatalogGeneratorModelConfigSchema[RagasGeneratorType]
