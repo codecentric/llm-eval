@@ -308,9 +308,10 @@ async def test_generate_catalog_from_config_success(
             return kwargs
 
         async def a_create_synthetic_qa(
-            self, process_sample: Callable[[SyntheticQAPair], Awaitable[Any]]
+            self,
+            process_samples: Callable[[list[SyntheticQAPair]], Awaitable[Any]],
         ) -> None:
-            await process_sample(dummy_pair)
+            await process_samples([dummy_pair])
 
         def create_synthetic_qa(self) -> list[SyntheticQAPair]:
             return [dummy_pair]

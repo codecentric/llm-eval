@@ -692,7 +692,8 @@
     "action": {
       "delete": "Delete",
       "edit": "Edit",
-      "undo": "Undo"
+      "undo": "Undo",
+      "view": "Details"
     },
     "add": "Add",
     "addContext": "add context",
