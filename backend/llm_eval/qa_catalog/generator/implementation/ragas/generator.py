@@ -320,7 +320,6 @@ class RagasQACatalogGenerator(
     def create_query_distribution(
         self,
         knowledge_graph: KnowledgeGraph,
-        sample_count: int,
     ) -> list[tuple[BaseSynthesizer, float]]:
         properties = ["headlines", "keyphrases", "entities"]
 
@@ -358,6 +357,7 @@ class RagasQACatalogGenerator(
         if len(query_distribution) == 0:
             raise ValueError("No query distribution provided")
 
+        # Given sample count may not match the outputted sample count
         return generator.generate(
             sample_count,
             query_distribution,
@@ -365,7 +365,7 @@ class RagasQACatalogGenerator(
 
     async def a_create_synthetic_qa(
         self,
-        process_sample: Callable[[SyntheticQAPair], Coroutine],
+        collect_samples: Callable[[list[SyntheticQAPair]], Coroutine],
     ) -> None:
         kg = self.create_knowledge_graph()
 
@@ -385,9 +385,7 @@ class RagasQACatalogGenerator(
             persona_list=self.personas,
         )
 
-        query_distribution = self.create_query_distribution(
-            kg, self.config.sample_count
-        )
+        query_distribution = self.create_query_distribution(kg)
 
         testset = self.generate_testset(
             generator,
@@ -397,11 +395,14 @@ class RagasQACatalogGenerator(
         if not testset.samples:
             raise ValueError("Empty testset")
 
-        for testset_sample in testset.samples:
-            sample = ragas_sample_to_synthetic_qa_pair(testset_sample)
-            await process_sample(sample)
+        samples: list[SyntheticQAPair] = [
+            ragas_sample_to_synthetic_qa_pair(testset_sample)
+            for testset_sample in testset.samples
+        ]
 
-        logger.info(f"Generated {self.config.sample_count} QA sample sets")
+        await collect_samples(samples)
+
+        logger.info(f"Generated {len(samples)} QA sample sets")
 
     @override
     @staticmethod

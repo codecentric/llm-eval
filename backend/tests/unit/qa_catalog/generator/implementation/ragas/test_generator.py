@@ -487,10 +487,10 @@ async def test_ragas_generator_a_create_synthetic_qa_successfull(
 
     samples = []
 
-    async def process_sample(sample: SyntheticQAPair) -> None:
-        samples.append(sample)
+    async def process_samples_fn(samples_batch: list[SyntheticQAPair]) -> None:
+        samples.extend(samples_batch)
 
-    await generator.a_create_synthetic_qa(process_sample)
+    await generator.a_create_synthetic_qa(process_samples_fn)
 
     assert len(samples) == generator.config.sample_count
 
