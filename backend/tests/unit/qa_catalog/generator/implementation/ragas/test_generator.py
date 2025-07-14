@@ -204,7 +204,7 @@ async def test_ragas_generator_create_document_nodes(
     filenames: list[str],
 ) -> None:
     with ragas_generator_factory() as generator:
-        nodes = generator._create_document_nodes(documents)
+        nodes = generator._create_knowledge_graph_nodes(documents)
 
         assert len(nodes) == len(documents)
         assert all(
@@ -220,15 +220,15 @@ async def test_ragas_generator_has_same_nodes(
 ) -> None:
     with ragas_generator_factory() as generator:
         shuffle(documents)
-        nodes1 = generator._create_document_nodes(documents)
+        nodes1 = generator._create_knowledge_graph_nodes(documents)
         shuffle(documents)
-        nodes2 = generator._create_document_nodes(documents)
+        nodes2 = generator._create_knowledge_graph_nodes(documents)
 
         assert generator._has_same_nodes(nodes1, nodes2)
 
         shuffle(documents)
         documents[0].page_content = "modified content"
-        nodes3 = generator._create_document_nodes(documents)
+        nodes3 = generator._create_knowledge_graph_nodes(documents)
 
         assert not generator._has_same_nodes(nodes1, nodes3)
 
@@ -245,8 +245,8 @@ async def test_ragas_generator_create_knowledge_graph_new_successfully(
 ) -> None:
     with ragas_generator_factory() as generator:
         generator._load_and_process_documents = MagicMock(return_value=documents)
-        generator._create_document_nodes = MagicMock(return_value=nodes)
-        generator.load_knowledge_graph = MagicMock(return_value=None)
+        generator._create_knowledge_graph_nodes = MagicMock(return_value=nodes)
+        generator.load_exiting_knowledge_graph = MagicMock(return_value=None)
         generator.apply_knowledge_graph_transformations = MagicMock()
 
         created_kg = mock_knowledge_graph(nodes=nodes)
@@ -254,14 +254,14 @@ async def test_ragas_generator_create_knowledge_graph_new_successfully(
 
         kg = generator.create_knowledge_graph()
 
-        generator._create_document_nodes.assert_called_once_with(documents)
-        generator.load_knowledge_graph.assert_called_once()
+        generator._create_knowledge_graph_nodes.assert_called_once_with(documents)
+        generator.load_exiting_knowledge_graph.assert_called_once()
         mock_create_backup.assert_called_once_with(
             generator.config.knowledge_graph_location
         )
         mock_knowledge_graph.assert_called_with(nodes=nodes)
         generator.apply_knowledge_graph_transformations.assert_called_once_with(
-            created_kg, documents
+            created_kg
         )
         assert kg is not None
 
@@ -276,11 +276,11 @@ async def test_ragas_generator_create_knowledge_graph_use_existing_graph_when_no
 ) -> None:
     with ragas_generator_factory() as generator:
         generator._load_and_process_documents = MagicMock(return_value=documents)
-        generator._create_document_nodes = MagicMock(return_value=nodes)
+        generator._create_knowledge_graph_nodes = MagicMock(return_value=nodes)
         generator.config.knowledge_graph_location = None
         generator.apply_knowledge_graph_transformations = MagicMock(return_value=None)
         existing_graph = MagicMock(name="existing_graph", nodes=nodes)
-        generator.load_knowledge_graph = MagicMock(return_value=existing_graph)
+        generator.load_exiting_knowledge_graph = MagicMock(return_value=existing_graph)
         mock_knowledge_graph.return_value = MagicMock(name="generated_graph")
 
         kg: MagicMock = generator.create_knowledge_graph()  # type: ignore
@@ -312,7 +312,7 @@ async def test_ragas_generator_load_knowledge_graph(
         generator.config.knowledge_graph_location.exists = MagicMock(return_value=True)
         mock_knowledge_graph.load.return_value = MagicMock(name="existing_graph")
 
-        kg = generator.load_knowledge_graph()
+        kg = generator.load_exiting_knowledge_graph()
 
         mock_knowledge_graph.load.assert_called_once_with(
             generator.config.knowledge_graph_location
@@ -330,7 +330,7 @@ async def test_ragas_generator_load_knowledge_graph_fails_on_non_existent_file(
         generator.config.knowledge_graph_location = MagicMock()
         generator.config.knowledge_graph_location.exists = MagicMock(return_value=False)
 
-        kg = generator.load_knowledge_graph()
+        kg = generator.load_exiting_knowledge_graph()
 
         assert kg is None
 
@@ -342,7 +342,7 @@ async def test_ragas_generator_load_knowledge_graph_fails_on_none_location(
     with ragas_generator_factory() as generator:
         generator.config.knowledge_graph_location = None
 
-        kg = generator.load_knowledge_graph()
+        kg = generator.load_exiting_knowledge_graph()
 
         assert kg is None
 
@@ -362,7 +362,7 @@ async def test_ragas_generator_load_knowledge_graph_fails_on_load(
         generator.config.knowledge_graph_location.exists = MagicMock(return_value=True)
         mock_knowledge_graph.load.side_effect = RuntimeError("Load failed")
 
-        kg = generator.load_knowledge_graph()
+        kg = generator.load_exiting_knowledge_graph()
 
         mock_knowledge_graph.load.assert_called_once_with(
             generator.config.knowledge_graph_location
@@ -403,7 +403,7 @@ async def test_ragas_generator_generate_single_sample(
         send_sample.send = AsyncMock()
         limiter = MagicMock()
 
-        await generator._generate_single_sample(MagicMock(), send_sample, limiter)
+        await generator._generate_samples(MagicMock(), send_sample, limiter)
 
         send_sample.send.assert_called_once_with("sample")
 
@@ -421,7 +421,7 @@ async def test_ragas_generator_generate_single_sample_wont_send_when_fails(
         send_sample.send = AsyncMock()
         limiter = MagicMock()
 
-        await generator._generate_single_sample(MagicMock(), send_sample, limiter)
+        await generator._generate_samples(MagicMock(), send_sample, limiter)
 
         send_sample.send.assert_not_called()
 
@@ -437,7 +437,7 @@ async def test_ragas_generator_generate_single_sample_does_nothing_on_empty_gene
         send_sample.send = AsyncMock()
         limiter = MagicMock()
 
-        await generator._generate_single_sample(MagicMock(), send_sample, limiter)
+        await generator._generate_samples(MagicMock(), send_sample, limiter)
 
         send_sample.send.assert_not_called()
 
@@ -483,7 +483,7 @@ async def test_ragas_generator_a_create_synthetic_qa_successfull(
             async with send_sample:
                 await send_sample.send(sample)
 
-    generator._generate_single_sample = AsyncMock(side_effect=mock_generate)
+    generator._generate_samples = AsyncMock(side_effect=mock_generate)
 
     samples = []
 
