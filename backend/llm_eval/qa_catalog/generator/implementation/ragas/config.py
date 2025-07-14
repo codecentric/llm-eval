@@ -26,7 +26,7 @@ class RagasQACatalogGeneratorPersona(ApiModel):
 class RagasQACatalogGeneratorConfig(QACatalogGeneratorConfig[RagasGeneratorType]):
     knowledge_graph_location: Path | None
     sample_count: int
-    query_distribution: dict[RagasQACatalogQuerySynthesizer, float]
+    query_distribution: list[RagasQACatalogQuerySynthesizer]
     personas: list[RagasQACatalogGeneratorPersona] | None
 
     use_existing_knowledge_graph: bool = True

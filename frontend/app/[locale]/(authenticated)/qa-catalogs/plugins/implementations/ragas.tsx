@@ -2,7 +2,8 @@ import {
   Accordion,
   AccordionItem,
   Button,
-  Slider,
+  Checkbox,
+  CheckboxGroup,
   Textarea,
 } from "@heroui/react";
 import { cx } from "classix";
@@ -30,16 +31,9 @@ const synthesizerTypes = Object.values(RagasQaCatalogQuerySynthesizer) as [
 
 const synthesizerTypeEnum = z.enum(synthesizerTypes);
 
-const getDefaultSynthesizerValues = (): {
-  [key: string]: number;
-} =>
-  synthesizerTypes.reduce(
-    (acc, t) => {
-      acc[t] = 0;
-      return acc;
-    },
-    {} as { [key: string]: number },
-  );
+const getDefaultSynthesizerValues = (): RagasQaCatalogQuerySynthesizer[] => [
+  RagasQaCatalogQuerySynthesizer.SINGLE_HOP_SPECIFIC,
+];
 
 const ragasGeneratorConfigurationShape = {
   config: z.object({
@@ -50,18 +44,9 @@ const ragasGeneratorConfigurationShape = {
       })
       .int({ message: formErrors.int })
       .min(1, { message: formErrors.required }),
-    queryDistribution: z.record(synthesizerTypeEnum, z.number()).refine(
-      (distribution) => {
-        const sum = Object.values(distribution).reduce(
-          (acc, val) => acc + (val == undefined ? 0 : val),
-          0,
-        );
-        return Math.abs(sum - 1) < Number.EPSILON;
-      },
-      {
-        message: "The sum of all values in queryDistribution must equal 1",
-      },
-    ),
+    queryDistribution: z
+      .array(synthesizerTypeEnum)
+      .min(1, { message: "At least one query synthesizer must be selected" }),
     personas: z
       .array(
         z.object({
@@ -220,46 +205,38 @@ const QueryDistributionForm = ({
         </span>
       </div>
       <div className="flex flex-col space-y-3">
-        {synthesizerTypes.map((synth) => (
-          <Controller
-            name={`config.queryDistribution.${synth}`}
-            control={control}
-            key={synth}
-            render={({ field, formState: { errors } }) => (
-              <div className="flex flex-col space-x-2 align-items-center items-end justify-center">
-                <Slider
-                  defaultValue={field.value}
-                  label={t(
-                    `RagasQACatalogGeneratorConfigurationForm.field.queryDistribution.values.${synth}.title`,
-                  )}
-                  maxValue={1}
-                  minValue={0}
-                  step={0.1}
-                  showSteps={true}
-                  size={"sm"}
-                  onChange={(v) => field.onChange(v)}
-                  color={distributionError ? "danger" : "primary"}
-                  data-testid={`queryDistributionSlider-${synth}`}
-                />
-                <span className="text-default-500 text-sm text-left w-full">
-                  {t(
-                    `RagasQACatalogGeneratorConfigurationForm.field.queryDistribution.values.${synth}.description`,
-                  )}
-                </span>
-                {errors.config?.queryDistribution?.[synth] && (
-                  <span className="text-danger text-sm">
-                    {errors.config.queryDistribution[synth].message}
+        <Controller
+          name="config.queryDistribution"
+          control={control}
+          render={({ field }) => (
+            <CheckboxGroup
+              value={field.value}
+              onValueChange={field.onChange}
+              orientation="vertical"
+              color="primary"
+              isInvalid={queryDistributionInvalid}
+              errorMessage={distributionError?.message}
+            >
+              {synthesizerTypes.map((synth) => (
+                <div key={synth} className="flex flex-col space-y-1">
+                  <Checkbox
+                    value={synth}
+                    data-testid={`queryDistributionCheckbox-${synth}`}
+                  >
+                    {t(
+                      `RagasQACatalogGeneratorConfigurationForm.field.queryDistribution.values.${synth}.title`,
+                    )}
+                  </Checkbox>
+                  <span className="text-default-500 text-sm ml-6">
+                    {t(
+                      `RagasQACatalogGeneratorConfigurationForm.field.queryDistribution.values.${synth}.description`,
+                    )}
                   </span>
-                )}
-              </div>
-            )}
-          />
-        ))}
-        {distributionError && (
-          <span className="text-danger text-sm">
-            {distributionError.root?.message}
-          </span>
-        )}
+                </div>
+              ))}
+            </CheckboxGroup>
+          )}
+        />
       </div>
     </div>
   );
@@ -324,11 +301,12 @@ export const ragasGeneratorPlugin = createQACatalogGenerationPlugin({
   configurationForm: RagasGeneratorConfigurationForm,
   getDefaults: () => ({
     config: {
+      type: "RAGAS" as const,
       sampleCount: 5,
-      queryDistribution: {
-        ...getDefaultSynthesizerValues(),
-        SINGLE_HOP_SPECIFIC: 1,
-      },
+      queryDistribution: getDefaultSynthesizerValues(),
+      personas: [],
+      knowledgeGraphLocation: null,
+      useExistingKnowledgeGraph: true,
     },
     modelConfig: { llmEndpoint: null },
   }),

@@ -1,6 +1,6 @@
+import "@/app/test-utils/mock-intl";
 import "@/app/test-utils/mock-router";
 import "@/app/test-utils/mock-toast";
-import "@/app/test-utils/mock-intl";
 
 import { addToast } from "@heroui/react";
 import {
@@ -24,6 +24,7 @@ import {
   QaCatalogGenerationConfig,
   QaCatalogGenerationModelConfigurationSchema,
   qaCatalogGetGeneratorTypes,
+  RagasQaCatalogQuerySynthesizer,
 } from "@/app/client";
 import {
   clearComboBox,
@@ -105,7 +106,7 @@ describe("Synthetic QA Catalog Generation Page", () => {
 
       await clearComboBox(user, ragasLabel("llmEndpointId"));
 
-      await inputDistributionsForRagas(testCase.configuration, true);
+      await inputDistributionsForRagas(testCase.configuration);
     }
   };
 
@@ -143,13 +144,13 @@ describe("Synthetic QA Catalog Generation Page", () => {
       configuration: {
         type: "RAGAS",
         personas: [],
-        queryDistribution: {
-          MULTI_HOP_ABSTRACT: 0,
-          MULTI_HOP_SPECIFIC: 0.5,
-          SINGLE_HOP_SPECIFIC: 0.5,
-        },
+        queryDistribution: [
+          RagasQaCatalogQuerySynthesizer.MULTI_HOP_SPECIFIC,
+          RagasQaCatalogQuerySynthesizer.SINGLE_HOP_SPECIFIC,
+        ],
         sampleCount: 5,
         knowledgeGraphLocation: null,
+        useExistingKnowledgeGraph: true,
       },
       modelConfigSchema: {
         type: "RAGAS",
@@ -168,20 +169,21 @@ describe("Synthetic QA Catalog Generation Page", () => {
           { name: "p-1", description: "description-1" },
           { name: "p-2", description: "description-2" },
         ],
-        queryDistribution: {
-          MULTI_HOP_ABSTRACT: 0.2,
-          MULTI_HOP_SPECIFIC: 0.4,
-          SINGLE_HOP_SPECIFIC: 0.4,
-        },
+        queryDistribution: [
+          RagasQaCatalogQuerySynthesizer.MULTI_HOP_ABSTRACT,
+          RagasQaCatalogQuerySynthesizer.MULTI_HOP_SPECIFIC,
+          RagasQaCatalogQuerySynthesizer.SINGLE_HOP_SPECIFIC,
+        ],
         sampleCount: 5,
         knowledgeGraphLocation: null,
+        useExistingKnowledgeGraph: true,
       },
       modelConfigSchema: {
         type: "RAGAS",
         llmEndpoint: "llm-1",
       },
       dataSourceConfigId: "data-source-config-2",
-      files: createFiles(["file-1", "file-2"]),
+      files: createFiles(["file-3", "file-4"]),
     },
   ];
 
@@ -396,20 +398,50 @@ describe("Synthetic QA Catalog Generation Page", () => {
 
   const inputDistributionsForRagas = async (
     configuration: QaCatalogGenerationConfig,
-    clear: boolean = false,
   ) => {
     if (configuration.type == "RAGAS") {
-      const distributions = configuration.queryDistribution;
+      const selectedSynthesizers = configuration.queryDistribution;
 
-      for (const [synth, weight] of Object.entries(distributions)) {
-        const slider = screen.getByTestId(`queryDistributionSlider-${synth}`);
-        const sliderInput = within(slider).getByRole("slider", {
-          hidden: true,
-        });
+      // First, uncheck all checkboxes to start from clean state
+      const allSynthesizers = [
+        RagasQaCatalogQuerySynthesizer.MULTI_HOP_ABSTRACT,
+        RagasQaCatalogQuerySynthesizer.MULTI_HOP_SPECIFIC,
+        RagasQaCatalogQuerySynthesizer.SINGLE_HOP_SPECIFIC,
+      ];
 
-        fireEvent.change(sliderInput, {
-          target: { value: clear ? 0 : weight },
-        });
+      for (const synth of allSynthesizers) {
+        const checkbox = screen.queryByTestId(
+          `queryDistributionCheckbox-${synth}`,
+        );
+        if (checkbox) {
+          // Check if checkbox is currently selected (either checked attribute or data-selected attribute)
+          const isChecked =
+            checkbox.getAttribute("checked") !== null ||
+            checkbox.getAttribute("data-selected") === "true";
+
+          if (isChecked) {
+            fireEvent.click(checkbox);
+            // Wait a bit for the state to update
+            await new Promise((resolve) => setTimeout(resolve, 10));
+          }
+        }
+      }
+
+      // Then check the ones we want
+      for (const synth of selectedSynthesizers) {
+        const checkbox = screen.getByTestId(
+          `queryDistributionCheckbox-${synth}`,
+        );
+        // Check if checkbox is currently unselected
+        const isChecked =
+          checkbox.getAttribute("checked") !== null ||
+          checkbox.getAttribute("data-selected") === "true";
+
+        if (!isChecked) {
+          fireEvent.click(checkbox);
+          // Wait a bit for the state to update
+          await new Promise((resolve) => setTimeout(resolve, 10));
+        }
       }
     }
   };

@@ -138,10 +138,9 @@ class RagasQACatalogGenerator(
         )
 
     def validate_config(self) -> None:
-        if sum(self.config.query_distribution.values()) != 1:
+        if not self.config.query_distribution:
             raise ValueError(
-                "Given query distribution for the generation is invalid, "
-                "distribution weights should sum up to 1"
+                "At least one query synthesizer must be selected for QA generation"
             )
 
     def _load_and_process_documents(self) -> list[Document]:
@@ -325,7 +324,7 @@ class RagasQACatalogGenerator(
         properties = ["headlines", "keyphrases", "entities"]
 
         selected_synthesizer_classes = (
-            query_synthesizer_classes[q] for q in self.config.query_distribution.keys()
+            query_synthesizer_classes[q] for q in self.config.query_distribution
         )
 
         synthesizers = []
