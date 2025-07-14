@@ -121,5 +121,6 @@ class AsyncQACatalogGeneratorSupport(ABC):
 
     @abstractmethod
     async def a_create_synthetic_qa(
-        self, process_sample: Callable[[SyntheticQAPair], Coroutine]
+        self,
+        collect_samples: Callable[[list[SyntheticQAPair]], Coroutine],
     ) -> None: ...
