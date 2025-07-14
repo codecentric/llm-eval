@@ -124,12 +124,8 @@ MockSessionLocal = Callable[[], ContextManager[AsyncMock]]
 def session_local() -> MockSessionLocal:
     @contextmanager
     def _func():  # noqa: ANN202
-        with patch(
-            "llm_eval.qa_catalog.logic.generation.AsyncSessionLocal",
-        ) as session_local:
-            mock_session = AsyncMock()
-            session_local.begin.return_value.__aenter__.return_value = mock_session
-            yield mock_session
+        mock_session = AsyncMock()
+        yield mock_session
 
     return _func
 
@@ -153,7 +149,7 @@ async def test_generate_catalog_task_happy_path(
         mock_find_qa_catalog.return_value = qa_catalog
         mock_find_data_source_config.return_value = temp_data_source_config
 
-        await generate_catalog(qa_catalog.id, catalog_generation_data)
+        await generate_catalog(mock_session, qa_catalog.id, catalog_generation_data)
 
         mock_find_qa_catalog.assert_called_once_with(mock_session, qa_catalog.id)
         mock_find_data_source_config.assert_called_once_with(
@@ -194,7 +190,7 @@ async def test_generate_catalog_task_temp_data_source_config_not_found(
         mock_find_qa_catalog.return_value = qa_catalog
         mock_find_data_source_config.return_value = None
 
-        await generate_catalog(qa_catalog.id, catalog_generation_data)
+        await generate_catalog(mock_session, qa_catalog.id, catalog_generation_data)
 
         mock_find_qa_catalog.assert_called_once_with(mock_session, qa_catalog.id)
         mock_find_data_source_config.assert_called_once_with(

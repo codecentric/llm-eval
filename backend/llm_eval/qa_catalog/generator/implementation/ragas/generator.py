@@ -303,6 +303,7 @@ class RagasQACatalogGenerator(
             return None
 
         logger.info(f"Knowledge graph found at {self.config.knowledge_graph_location}")
+        knowledge_graph = None
         try:
             knowledge_graph = KnowledgeGraph.load(self.config.knowledge_graph_location)
         except Exception as e:
