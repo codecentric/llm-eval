@@ -1,10 +1,6 @@
 name: Test
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
   workflow_dispatch:
 
 permissions:
@@ -34,9 +30,7 @@ jobs:
       PG_USER: pguser
       PG_PASSWORD: pgpassword
       PG_DB: postgres
-      POSTGRES_USER: pguser
-      POSTGRES_PASSWORD: pgpassword
-      POSTGRES_DB: postgres
+      PG_PORT: 5432
       LLM_EVAL_ENCRYPTION_KEY: 34614d1d76c0e2d2e94f87948f2325324a352a6948963c0ce20e9691b9ea1559
     
     steps:
