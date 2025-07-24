@@ -1,14 +1,8 @@
-name: GitLab Migration Build Pipeline
+name: Build Pipeline
 
 # Migrated from GitLab CI - supports manual dispatch
 "on":
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to use for build (defaults to commit SHA)'
-        required: false
-        type: string
-        default: ''
 
 
 
@@ -26,9 +20,7 @@ jobs:
       - name: Set version
         id: version
         run: |
-          if [ -n "${{ inputs.version }}" ]; then
-            echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
-          elif [ "${{ github.ref_type }}" == "tag" ]; then
+          if [ "${{ github.ref_type }}" == "tag" ]; then
             echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
           else
             echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
@@ -66,9 +58,7 @@ jobs:
       - name: Set version
         id: version
         run: |
-          if [ -n "${{ inputs.version }}" ]; then
-            echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
-          elif [ "${{ github.ref_type }}" == "tag" ]; then
+          if [ "${{ github.ref_type }}" == "tag" ]; then
             echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
           else
             echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
@@ -110,10 +100,7 @@ jobs:
       - name: Set version variables
         id: version
         run: |
-          if [ -n "${{ inputs.version }}" ]; then
-            echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
-            echo "CHART_VERSION=${{ inputs.version }}" >> $GITHUB_ENV
-          elif [ "${{ github.ref_type }}" == "tag" ]; then
+          if [ "${{ github.ref_type }}" == "tag" ]; then
             echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
             echo "CHART_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
           else
@@ -150,7 +137,7 @@ jobs:
           crane push /tmp/backend.tar ${{ env.LLM_EVAL_BACKEND_IMAGE }}:${{ env.SHORT_SHA }}
 
       - name: Push images with chart version
-        if: github.ref_type == 'tag' || inputs.version != ''
+        if: github.ref_type == 'tag'
         run: |
           # Tag images with the chart version if set
           crane tag ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }} ${{ env.CHART_VERSION }}
