@@ -2,14 +2,16 @@ name: Build Container images
 
 # this workflow will be triggered manually from workflows needing the images
 on:
-  push:
-    branches:
-      - 'feature/wip-github-pipelines'
-    tags-ignore:
-      - "**"
-  pull_request:
-    paths:
-      - .github/workflows/build-container-images.yaml
+  workflow_dispatch:
+    inputs:
+      push-to-registry:
+        required: false
+        type: boolean
+        default: false
+      tag-prefix:
+        required: false
+        type: string
+        default: ''
   workflow_call:
     inputs:
       push-to-registry:
