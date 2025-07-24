@@ -11,13 +11,14 @@ class AzureAiModelSettings(BaseSettings, ModelSettings, prefix="AZURE_OPENAI_"):
     api_version: str = Field(default="2024-02-01")
     endpoint: str = Field(default="https://example.com")
     api_key: str = Field(default="api-key")
-    deployment: str = Field(default="text-embedding-3-large")
+    embedding_deployment: str = Field(default="text-embedding-3-large")
+    chat_deployment: str = Field(default="gpt-4.1")
     response_language: str = Field(default="german")
 
     def to_chat(self) -> BaseChatModel:
         return AzureChatOpenAI(
             api_version=self.api_version,
-            azure_deployment=self.deployment,
+            azure_deployment=self.chat_deployment,
             azure_endpoint=self.endpoint,
             api_key=SecretStr(self.api_key),
         )
@@ -25,7 +26,7 @@ class AzureAiModelSettings(BaseSettings, ModelSettings, prefix="AZURE_OPENAI_"):
     def to_embeddings(self) -> Embeddings:
         return AzureOpenAIEmbeddings(
             api_version=self.api_version,
-            azure_deployment=self.deployment,
+            azure_deployment=self.embedding_deployment,
             azure_endpoint=self.endpoint,
             api_key=SecretStr(self.api_key),
         )

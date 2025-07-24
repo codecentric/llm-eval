@@ -693,7 +693,8 @@
     "action": {
       "delete": "Löschen",
       "edit": "Bearbeiten",
-      "undo": "Rückgängig"
+      "undo": "Rückgängig",
+      "view": "Details"
     },
     "add": "Hinzufügen",
     "addContext": "Kontext hinzufügen",
