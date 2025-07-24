@@ -1,7 +1,7 @@
 name: GitLab Migration Build Pipeline
 
-# Migrated from GitLab CI - using dispatch trigger only as requested
-on:
+# Migrated from GitLab CI - supports manual dispatch and automatic triggers
+"on":
   workflow_dispatch:
     inputs:
       version:
@@ -9,6 +9,12 @@ on:
         required: false
         type: string
         default: ''
+  push:
+    branches:
+      - develop
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-rc.*'
 
 
 permissions:
@@ -96,3 +102,61 @@ jobs:
           path: /tmp/backend.tar
           retention-days: 2
 
+  # Push containers to GitHub Container Registry - migrated from push-container-to-repository-registry
+  push-container-to-registry:
+    runs-on: ubuntu-latest
+    needs:
+      - build-container-ui
+      - build-container-backend
+    if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Set version variables
+        id: version
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
+            echo "CHART_VERSION=${{ inputs.version }}" >> $GITHUB_ENV
+          elif [ "${{ github.ref_type }}" == "tag" ]; then
+            echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+            echo "CHART_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
+          fi
+          echo "SHORT_SHA=${GITHUB_SHA:0:8}" >> $GITHUB_ENV
+          echo "RAG_EVAL_UI_IMAGE=ghcr.io/${{ github.repository }}/rag-eval-ui" >> $GITHUB_ENV
+          echo "LLM_EVAL_BACKEND_IMAGE=ghcr.io/${{ github.repository }}/llm-eval-backend" >> $GITHUB_ENV
+
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend.tar
+          path: /tmp
+
+      - name: Download backend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend.tar
+          path: /tmp
+
+      - name: Setup crane
+        uses: imjasonh/setup-crane@v0.3
+
+      - name: Login to GitHub Container Registry
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | crane auth login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push images with commit SHA
+        run: |
+          # Push the images with the current commit sha
+          crane push /tmp/frontend.tar ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }}
+          crane push /tmp/backend.tar ${{ env.LLM_EVAL_BACKEND_IMAGE }}:${{ env.SHORT_SHA }}
+
+      - name: Push images with chart version
+        if: github.ref_type == 'tag' || inputs.version != ''
+        run: |
+          # Tag images with the chart version if set
+          crane tag ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }} ${{ env.CHART_VERSION }}
+          crane tag ${{ env.LLM_EVAL_BACKEND_IMAGE }}:${{ env.SHORT_SHA }} ${{ env.CHART_VERSION }}
