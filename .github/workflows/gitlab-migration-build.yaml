@@ -1,6 +1,6 @@
 name: GitLab Migration Build Pipeline
 
-# Migrated from GitLab CI - supports manual dispatch and automatic triggers
+# Migrated from GitLab CI - supports manual dispatch
 "on":
   workflow_dispatch:
     inputs:
@@ -9,12 +9,7 @@ name: GitLab Migration Build Pipeline
         required: false
         type: string
         default: ''
-  push:
-    branches:
-      - develop
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
-      - '[0-9]+.[0-9]+.[0-9]+-rc.*'
+
 
 
 permissions:
@@ -108,7 +103,6 @@ jobs:
     needs:
       - build-container-ui
       - build-container-backend
-    if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: read
       packages: write
