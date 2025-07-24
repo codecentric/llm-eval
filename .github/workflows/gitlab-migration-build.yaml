@@ -9,6 +9,21 @@ on:
         required: false
         type: string
         default: ''
+      chart_path:
+        description: 'Path to helm chart directory'
+        required: false
+        type: string
+        default: 'helm-chart'
+      chart_name:
+        description: 'Name of the helm chart'
+        required: false
+        type: string
+        default: 'llm-eval'
+      chart_version:
+        description: 'Version to use for helm chart (defaults to commit SHA)'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -93,4 +108,62 @@ jobs:
         with:
           name: backend.tar
           path: /tmp/backend.tar
+          retention-days: 2
+
+  # Build helm chart - migrated from build-helm-chart
+  build-helm-chart:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set chart version
+        id: chart-version
+        run: |
+          if [ -n "${{ inputs.chart_version }}" ]; then
+            echo "CHART_VERSION=${{ inputs.chart_version }}" >> $GITHUB_ENV
+          elif [ "${{ github.ref_type }}" == "tag" ]; then
+            echo "CHART_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+            echo "CHART_VERSION=${{ github.sha }}" >> $GITHUB_ENV
+          fi
+          echo "CHART_PATH=${{ inputs.chart_path }}" >> $GITHUB_ENV
+          echo "CHART_NAME=${{ inputs.chart_name }}" >> $GITHUB_ENV
+          echo "PACKAGE_NAME=${{ inputs.chart_name }}-${{ env.CHART_VERSION }}.tgz" >> $GITHUB_ENV
+      
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: '3.15.4'
+      
+      - name: Check if chart directory exists
+        id: check-chart
+        run: |
+          if [ -d "${{ env.CHART_PATH }}" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Chart directory found at ${{ env.CHART_PATH }}"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Chart directory not found at ${{ env.CHART_PATH }}"
+          fi
+      
+      - name: Install helm dependencies
+        if: steps.check-chart.outputs.exists == 'true'
+        run: |
+          cd ${{ env.CHART_PATH }}
+          helm dependency update
+          cd ${{ github.workspace }}
+      
+      - name: Package helm chart
+        if: steps.check-chart.outputs.exists == 'true'
+        run: |
+          echo "Building Helm Chart ${{ env.CHART_NAME }} with version ${{ env.CHART_VERSION }} from ${{ env.CHART_PATH }}"
+          helm package ${{ env.CHART_PATH }} --version ${{ env.CHART_VERSION }} -d .
+          ls -la *.tgz
+      
+      - name: Upload helm chart artifact
+        if: steps.check-chart.outputs.exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: helm-chart
+          path: "*.tgz"
           retention-days: 2
