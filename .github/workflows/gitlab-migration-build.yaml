@@ -124,6 +124,7 @@ jobs:
             echo "CHART_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
           else
             echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
+            # For branch builds, don't set CHART_VERSION
           fi
           echo "SHORT_SHA=${GITHUB_SHA:0:8}" >> $GITHUB_ENV
           echo "RAG_EVAL_UI_IMAGE=ghcr.io/${{ github.repository }}/rag-eval-ui" >> $GITHUB_ENV
