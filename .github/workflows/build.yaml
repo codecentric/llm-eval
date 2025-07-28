@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   # Build and push frontend container - migrated from build-container-ui
-  build-container-ui:
+  build-and-push-frontend:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -48,7 +48,6 @@ jobs:
           file: frontend/Dockerfile
           build-args: |
             VERSION=${{ env.VERSION }}
-            CI=true
           push: true
           tags: |
             ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }}
@@ -59,7 +58,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   # Build and push backend container - migrated from build-container-backend
-  build-container-backend:
+  build-and-push-backend:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -98,7 +97,6 @@ jobs:
           file: backend/Dockerfile
           build-args: |
             VERSION=${{ env.VERSION }}
-            CI=true
           push: true
           tags: |
             ${{ env.LLM_EVAL_BACKEND_IMAGE }}:${{ env.SHORT_SHA }}
