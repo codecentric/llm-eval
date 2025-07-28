@@ -1,7 +1,7 @@
 ---
 name: Security Scan
 
-on:
+"on":
   pull_request:
     branches: [ main ]
   workflow_dispatch:
