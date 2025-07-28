@@ -1,5 +1,5 @@
 ---
-name: Build Pipeline
+name: Build & Push
 
 # Migrated from GitLab CI - supports manual dispatch
 "on":
