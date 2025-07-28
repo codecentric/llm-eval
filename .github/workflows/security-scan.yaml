@@ -28,7 +28,7 @@ jobs:
           path: ./
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
-          extra_args: --debug --only-verified --json --output-file=secret-detection-report.json
+          extra_args: --results=verified,unknown --json --output-file=secret-detection-report.json
 
       - name: Handle TruffleHog errors
         if: failure()
