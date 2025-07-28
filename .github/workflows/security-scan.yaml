@@ -21,6 +21,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Run TruffleHog OSS
         uses: trufflesecurity/trufflehog@main
         with:
@@ -34,75 +37,13 @@ jobs:
         run: |
           echo "TruffleHog encountered an error. Please check the logs for details."
           exit 1
-      - name: Check if secrets were found
-        id: secret-check
-        run: |
-          if [ -f "secret-detection-report.json" ] && [ -s "secret-detection-report.json" ]; then
-            echo "secrets-found=true" >> $GITHUB_OUTPUT
-          else
-            echo "secrets-found=false" >> $GITHUB_OUTPUT
-            echo "[]" > secret-detection-report.json
-          fi
-
-      - name: Upload secret detection report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: secret-detection-report
-          path: secret-detection-report.json
-          retention-days: 30
-
-  # SAST scanning job - replaces GitLab semgrep-sast
-  semgrep-sast:
-    name: Semgrep SAST
-    runs-on: ubuntu-latest
-    container:
-      image: returntocorp/semgrep
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Semgrep
-        run: |
-          if ! semgrep --config=auto --json --output=sast-report.json .; then
-            echo "Semgrep failed. Please check the configuration or logs for details." >&2
-          fi
-          # Ensure we have a valid JSON file even if no findings
-          if [ ! -f "sast-report.json" ] || [ ! -s "sast-report.json" ]; then
-            echo '{"results": [], "errors": []}' > sast-report.json
-          fi
-        env:
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
-
-      - name: Upload SAST report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: sast-report
-          path: sast-report.json
-          retention-days: 30
-
-  # Secret detection analysis - replaces GitLab check-secrets
-  check-secrets:
-    name: Check Secrets
-    runs-on: ubuntu-latest
-    needs: secret-detection
-    if: always()
-    steps:
-      - name: Download secret detection report
-        uses: actions/download-artifact@v4
-        with:
-          name: secret-detection-report
-
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Analyze secret detection results
         run: |
           # Check if the report file exists and is not empty
           if [ ! -f "secret-detection-report.json" ] || [ ! -s "secret-detection-report.json" ]; then
             echo "No secret detection report found or report is empty"
-            echo "No secrets detected."
+            echo "✅ No secrets detected."
             exit 0
           fi
 
@@ -117,20 +58,30 @@ jobs:
             echo "✅ No secrets detected."
           fi
 
-  # SAST report analysis - replaces GitLab check-sast-report
-  check-sast-report:
-    name: Check SAST Report
+  # SAST scanning job - replaces GitLab semgrep-sast
+  semgrep-sast:
+    name: Semgrep SAST
     runs-on: ubuntu-latest
-    needs: semgrep-sast
-    if: always()
+    container:
+      image: returntocorp/semgrep
     steps:
-      - name: Download SAST report
-        uses: actions/download-artifact@v4
-        with:
-          name: sast-report
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
+        run: apt-get update && apt-get install -y jq
+
+      - name: Run Semgrep
+        run: |
+          if ! semgrep --config=auto --json --output=sast-report.json .; then
+            echo "Semgrep failed. Please check the configuration or logs for details." >&2
+          fi
+          # Ensure we have a valid JSON file even if no findings
+          if [ ! -f "sast-report.json" ] || [ ! -s "sast-report.json" ]; then
+            echo '{"results": [], "errors": []}' > sast-report.json
+          fi
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
 
       - name: Analyze SAST results
         run: |
@@ -169,30 +120,3 @@ jobs:
           else
             echo "✅ No vulnerabilities found!"
           fi
-
-  # Summary job to provide overall security status
-  security-summary:
-    name: Security Summary
-    runs-on: ubuntu-latest
-    needs: [check-secrets, check-sast-report]
-    if: always()
-    steps:
-      - name: Security Scan Summary
-        run: |
-          echo "## Security Scan Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          if [ "${{ needs.check-secrets.result }}" = "success" ]; then
-            echo "✅ **Secret Detection**: No secrets found" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ **Secret Detection**: Secrets detected!" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          if [ "${{ needs.check-sast-report.result }}" = "success" ]; then
-            echo "✅ **SAST Analysis**: No critical vulnerabilities" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ **SAST Analysis**: Vulnerabilities detected!" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "For detailed results, check the individual job outputs and artifacts." >> $GITHUB_STEP_SUMMARY
