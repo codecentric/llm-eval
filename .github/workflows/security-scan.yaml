@@ -65,7 +65,9 @@ jobs:
 
       - name: Run Semgrep
         run: |
-          semgrep --config=auto --json --output=sast-report.json . || true
+          if ! semgrep --config=auto --json --output=sast-report.json .; then
+            echo "Semgrep failed. Please check the configuration or logs for details." >&2
+          fi
           # Ensure we have a valid JSON file even if no findings
           if [ ! -f "sast-report.json" ] || [ ! -s "sast-report.json" ]; then
             echo '{"results": [], "errors": []}' > sast-report.json
