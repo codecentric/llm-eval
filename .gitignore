@@ -6,6 +6,10 @@ http-client.private.env.json
 .vector_db
 .obsidian
 
+# npm dependencies and lock files
+node_modules/
+package-lock.json
+
 data/*
 backend/data/*
 !data/.gitkeep
