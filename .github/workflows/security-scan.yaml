@@ -105,10 +105,10 @@ jobs:
             echo "No secrets detected."
             exit 0
           fi
-          
+
           # Check if any secrets were found
           secrets_count=$(jq length secret-detection-report.json 2>/dev/null || echo "0")
-          
+
           if [ "$secrets_count" -gt 0 ]; then
             echo "⚠️ $secrets_count secret(s) found! Failing the pipeline."
             jq . secret-detection-report.json
@@ -139,21 +139,21 @@ jobs:
             echo "No SAST report found"
             exit 1
           fi
-          
+
           # Parse the report and count vulnerabilities
           # Semgrep report structure: {"results": [...], "errors": [...]}
           vulnerabilities_count=$(jq '.results | length' sast-report.json 2>/dev/null || echo "0")
-          
+
           if [ "$vulnerabilities_count" -gt 0 ]; then
             echo "⚠️ $vulnerabilities_count vulnerability/vulnerabilities found!"
-            
+
             # Count critical/high severity issues
             critical_count=$(jq '[.results[] | select(.extra.severity == "ERROR")] | length' sast-report.json 2>/dev/null || echo "0")
             high_count=$(jq '[.results[] | select(.extra.severity == "WARNING")] | length' sast-report.json 2>/dev/null || echo "0")
-            
+
             echo "Critical/Error severity: $critical_count"
             echo "High/Warning severity: $high_count"
-            
+
             if [ "$critical_count" -gt 0 ]; then
               echo "❌ $critical_count critical vulnerability(s) found!"
               exit 1
@@ -181,18 +181,18 @@ jobs:
         run: |
           echo "## Security Scan Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ "${{ needs.check-secrets.result }}" = "success" ]; then
             echo "✅ **Secret Detection**: No secrets found" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ **Secret Detection**: Secrets detected!" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           if [ "${{ needs.check-sast-report.result }}" = "success" ]; then
             echo "✅ **SAST Analysis**: No critical vulnerabilities" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ **SAST Analysis**: Vulnerabilities detected!" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "For detailed results, check the individual job outputs and artifacts." >> $GITHUB_STEP_SUMMARY
