@@ -27,8 +27,32 @@ jobs:
     name: Run Tests
     uses: ./.github/workflows/test.yaml
 
-  # Sequential build stage - runs only after parallel jobs succeed
-  build-and-push:
-    name: Build and Push
-    needs: [lint, security-scan, test]
-    uses: ./.github/workflows/build-and-push.yaml
+  # Detect changes to determine which builds to run
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.changes.outputs.frontend }}
+      backend: ${{ steps.changes.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+            backend:
+              - 'backend/**'
+
+  # Sequential build stages - run only after parallel jobs succeed and when changes detected
+  build-and-push-frontend:
+    name: Build and Push Frontend
+    needs: [lint, security-scan, test, changes]
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
+    uses: ./.github/workflows/build-and-push-frontend.yaml
+
+  build-and-push-backend:
+    name: Build and Push Backend
+    needs: [lint, security-scan, test, changes]
+    if: ${{ needs.changes.outputs.backend == 'true' }}
+    uses: ./.github/workflows/build-and-push-backend.yaml
