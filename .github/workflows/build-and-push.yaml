@@ -49,7 +49,7 @@ jobs:
           file: frontend/Dockerfile
           build-args: |
             VERSION=${{ env.VERSION }}
-          push: true
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: |
             ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }}
             ${{ github.ref_type == 'tag' &&
@@ -98,7 +98,7 @@ jobs:
           file: backend/Dockerfile
           build-args: |
             VERSION=${{ env.VERSION }}
-          push: true
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: |
             ${{ env.LLM_EVAL_BACKEND_IMAGE }}:${{ env.SHORT_SHA }}
             ${{ github.ref_type == 'tag' &&
