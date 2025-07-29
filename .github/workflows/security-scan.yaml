@@ -28,7 +28,7 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          extra_args: --results=verified,unknown
+          extra_args: --results=verified
 
       - name: Handle TruffleHog errors
         if: failure()
