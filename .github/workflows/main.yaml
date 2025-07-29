@@ -28,7 +28,12 @@ jobs:
     uses: ./.github/workflows/test.yaml
 
   # Sequential build stage - runs only after parallel jobs succeed
-  build-and-push:
-    name: Build and Push
+  build-and-push-frontend:
+    name: Build and Push Frontend
     needs: [lint, security-scan, test]
-    uses: ./.github/workflows/build-and-push.yaml
+    uses: ./.github/workflows/build-and-push-frontend.yaml
+
+  build-and-push-backend:
+    name: Build and Push Backend
+    needs: [lint, security-scan, test]
+    uses: ./.github/workflows/build-and-push-backend.yaml

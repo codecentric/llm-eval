@@ -1,0 +1,69 @@
+---
+name: Build & Push Backend
+
+# Trigger only on changes to backend directory
+"on":
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # Build and push backend container
+  build-and-push-backend:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set version
+        id: version
+        run: |
+          if [ "${{ github.ref_type }}" == "tag" ]; then
+            echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
+          fi
+          echo "SHORT_SHA=${GITHUB_SHA:0:8}" >> $GITHUB_ENV
+          # Set image name for backend
+          LLM_EVAL_BACKEND_IMAGE="ghcr.io/${{ github.repository }}"
+          LLM_EVAL_BACKEND_IMAGE="${LLM_EVAL_BACKEND_IMAGE}/llm-eval-backend"
+          echo "LLM_EVAL_BACKEND_IMAGE=${LLM_EVAL_BACKEND_IMAGE}" >> \
+            $GITHUB_ENV
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push backend container
+        uses: docker/build-push-action@v6
+        with:
+          context: backend/
+          file: backend/Dockerfile
+          build-args: |
+            VERSION=${{ env.VERSION }}
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          tags: |
+            ${{ env.LLM_EVAL_BACKEND_IMAGE }}:${{ env.SHORT_SHA }}
+            ${{ github.ref_type == 'tag' &&
+                format('{0}:{1}', env.LLM_EVAL_BACKEND_IMAGE,
+                       github.ref_name) || '' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
