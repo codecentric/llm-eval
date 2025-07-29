@@ -1,0 +1,34 @@
+---
+name: Main Pipeline
+
+"on":
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  packages: write
+
+jobs:
+  # Parallel execution of lint, security-scan, and test workflows
+  lint:
+    name: Run Lint
+    uses: ./.github/workflows/lint.yaml
+
+  security-scan:
+    name: Run Security Scan
+    uses: ./.github/workflows/security-scan.yaml
+
+  test:
+    name: Run Tests
+    uses: ./.github/workflows/test.yaml
+
+  # Sequential build stage - runs only after parallel jobs succeed
+  build-and-push:
+    name: Build and Push
+    needs: [lint, security-scan, test]
+    uses: ./.github/workflows/build-and-push.yaml

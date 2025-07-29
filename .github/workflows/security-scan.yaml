@@ -1,10 +1,9 @@
 ---
 name: Security Scan
 
-on:
-  pull_request:
-    branches: [ main ]
+"on":
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -22,6 +21,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Run TruffleHog OSS
         uses: trufflesecurity/trufflehog@main
         with:
@@ -35,23 +37,26 @@ jobs:
         run: |
           echo "TruffleHog encountered an error. Please check the logs for details."
           exit 1
-      - name: Check if secrets were found
-        id: secret-check
+
+      - name: Analyze secret detection results
         run: |
-          if [ -f "secret-detection-report.json" ] && [ -s "secret-detection-report.json" ]; then
-            echo "secrets-found=true" >> $GITHUB_OUTPUT
-          else
-            echo "secrets-found=false" >> $GITHUB_OUTPUT
-            echo "[]" > secret-detection-report.json
+          # Check if the report file exists and is not empty
+          if [ ! -f "secret-detection-report.json" ] || [ ! -s "secret-detection-report.json" ]; then
+            echo "No secret detection report found or report is empty"
+            echo "✅ No secrets detected."
+            exit 0
           fi
 
-      - name: Upload secret detection report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: secret-detection-report
-          path: secret-detection-report.json
-          retention-days: 30
+          # Check if any secrets were found
+          secrets_count=$(jq length secret-detection-report.json 2>/dev/null || echo "0")
+
+          if [ "$secrets_count" -gt 0 ]; then
+            echo "⚠️ $secrets_count secret(s) found! Failing the pipeline."
+            jq . secret-detection-report.json
+            exit 1
+          else
+            echo "✅ No secrets detected."
+          fi
 
   # SAST scanning job - replaces GitLab semgrep-sast
   semgrep-sast:
@@ -75,64 +80,6 @@ jobs:
         env:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
 
-      - name: Upload SAST report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: sast-report
-          path: sast-report.json
-          retention-days: 30
-
-  # Secret detection analysis - replaces GitLab check-secrets
-  check-secrets:
-    name: Check Secrets
-    runs-on: ubuntu-latest
-    needs: secret-detection
-    if: always()
-    steps:
-      - name: Download secret detection report
-        uses: actions/download-artifact@v4
-        with:
-          name: secret-detection-report
-
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
-
-      - name: Analyze secret detection results
-        run: |
-          # Check if the report file exists and is not empty
-          if [ ! -f "secret-detection-report.json" ] || [ ! -s "secret-detection-report.json" ]; then
-            echo "No secret detection report found or report is empty"
-            echo "No secrets detected."
-            exit 0
-          fi
-          
-          # Check if any secrets were found
-          secrets_count=$(jq length secret-detection-report.json 2>/dev/null || echo "0")
-          
-          if [ "$secrets_count" -gt 0 ]; then
-            echo "⚠️ $secrets_count secret(s) found! Failing the pipeline."
-            jq . secret-detection-report.json
-            exit 1
-          else
-            echo "✅ No secrets detected."
-          fi
-
-  # SAST report analysis - replaces GitLab check-sast-report
-  check-sast-report:
-    name: Check SAST Report
-    runs-on: ubuntu-latest
-    needs: semgrep-sast
-    if: always()
-    steps:
-      - name: Download SAST report
-        uses: actions/download-artifact@v4
-        with:
-          name: sast-report
-
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
-
       - name: Analyze SAST results
         run: |
           # Check if the report file exists
@@ -140,21 +87,21 @@ jobs:
             echo "No SAST report found"
             exit 1
           fi
-          
+
           # Parse the report and count vulnerabilities
           # Semgrep report structure: {"results": [...], "errors": [...]}
-          vulnerabilities_count=$(jq '.results | length' sast-report.json 2>/dev/null || echo "0")
-          
+          vulnerabilities_count=$(python3 -c "import json; print(len(json.load(open('sast-report.json')).get('results', [])))" 2>/dev/null || echo "0")
+
           if [ "$vulnerabilities_count" -gt 0 ]; then
             echo "⚠️ $vulnerabilities_count vulnerability/vulnerabilities found!"
-            
+
             # Count critical/high severity issues
-            critical_count=$(jq '[.results[] | select(.extra.severity == "ERROR")] | length' sast-report.json 2>/dev/null || echo "0")
-            high_count=$(jq '[.results[] | select(.extra.severity == "WARNING")] | length' sast-report.json 2>/dev/null || echo "0")
-            
+            critical_count=$(python3 -c "import json; data=json.load(open('sast-report.json')); print(len([r for r in data.get('results', []) if r.get('extra', {}).get('severity') == 'ERROR']))" 2>/dev/null || echo "0")
+            high_count=$(python3 -c "import json; data=json.load(open('sast-report.json')); print(len([r for r in data.get('results', []) if r.get('extra', {}).get('severity') == 'WARNING']))" 2>/dev/null || echo "0")
+
             echo "Critical/Error severity: $critical_count"
             echo "High/Warning severity: $high_count"
-            
+
             if [ "$critical_count" -gt 0 ]; then
               echo "❌ $critical_count critical vulnerability(s) found!"
               exit 1
@@ -170,30 +117,3 @@ jobs:
           else
             echo "✅ No vulnerabilities found!"
           fi
-
-  # Summary job to provide overall security status
-  security-summary:
-    name: Security Summary
-    runs-on: ubuntu-latest
-    needs: [check-secrets, check-sast-report]
-    if: always()
-    steps:
-      - name: Security Scan Summary
-        run: |
-          echo "## Security Scan Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          if [ "${{ needs.check-secrets.result }}" = "success" ]; then
-            echo "✅ **Secret Detection**: No secrets found" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ **Secret Detection**: Secrets detected!" >> $GITHUB_STEP_SUMMARY
-          fi
-          
-          if [ "${{ needs.check-sast-report.result }}" = "success" ]; then
-            echo "✅ **SAST Analysis**: No critical vulnerabilities" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ **SAST Analysis**: Vulnerabilities detected!" >> $GITHUB_STEP_SUMMARY
-          fi
-          
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "For detailed results, check the individual job outputs and artifacts." >> $GITHUB_STEP_SUMMARY

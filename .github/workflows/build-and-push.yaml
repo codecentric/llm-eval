@@ -4,6 +4,7 @@ name: Build & Push
 # Migrated from GitLab CI - supports manual dispatch
 "on":
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read

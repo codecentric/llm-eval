@@ -15,7 +15,7 @@ The `security-scan.yaml` workflow provides:
 ### Static Application Security Testing (SAST)
 - **Tool**: Semgrep
 - **Purpose**: Identifies security vulnerabilities in code
-- **Trigger**: Pull requests to main branch, manual dispatch  
+- **Trigger**: Pull requests to main branch, manual dispatch
 - **Output**: `sast-report.json` artifact
 
 ### Report Analysis
@@ -34,7 +34,7 @@ Security scans run automatically on:
 ### Manual
 To run security scans manually:
 1. Go to Actions → Security Scan
-2. Click "Run workflow" 
+2. Click "Run workflow"
 3. Select the branch to scan
 
 ## Configuration
