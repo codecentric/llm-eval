@@ -22,7 +22,7 @@ jobs:
   # Parallel execution of lint, security-scan, and test workflows
   lint:
     name: Run Lint
-    uses: ./.github/workflows/backend/lint.yaml
+    uses: ./.github/workflows/backend-lint.yaml
 
   security-scan:
     name: Run Security Scan
@@ -30,10 +30,10 @@ jobs:
 
   test:
     name: Run Tests
-    uses: ./.github/workflows/backend/test.yaml
+    uses: ./.github/workflows/backend-test.yaml
 
   # Sequential build stage - runs only after parallel jobs succeed
   build-and-push:
     name: Build and Push
     needs: [lint, security-scan, test]
-    uses: ./.github/workflows/backend/build-and-push.yaml
+    uses: ./.github/workflows/backend-build-and-push.yaml
