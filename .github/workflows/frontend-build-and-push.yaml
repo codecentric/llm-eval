@@ -24,14 +24,25 @@ jobs:
         id: version
         run: |
           if [ "${{ github.ref_type }}" == "tag" ]; then
-            echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+            # Extract version from tag if it's a semantic version tag
+            TAG_NAME="${{ github.ref_name }}"
+            if [[ "$TAG_NAME" =~ ^(frontend-v|v)?([0-9]+\.[0-9]+\.[0-9]+.*)$ ]]
+            then
+              VERSION="${BASH_REMATCH[2]}"
+              echo "SEMANTIC_VERSION=true" >> $GITHUB_ENV
+            else
+              VERSION="$TAG_NAME"
+              echo "SEMANTIC_VERSION=false" >> $GITHUB_ENV
+            fi
+            echo "VERSION=${VERSION}" >> $GITHUB_ENV
           else
             echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
+            echo "SEMANTIC_VERSION=false" >> $GITHUB_ENV
           fi
           echo "SHORT_SHA=${GITHUB_SHA:0:8}" >> $GITHUB_ENV
           # Set image name for frontend
-          RAG_EVAL_UI_IMAGE="ghcr.io/${{ github.repository }}/rag-eval-ui"
-          echo "RAG_EVAL_UI_IMAGE=${RAG_EVAL_UI_IMAGE}" >> $GITHUB_ENV
+          IMAGE="ghcr.io/${{ github.repository }}/rag-eval-ui"
+          echo "RAG_EVAL_UI_IMAGE=${IMAGE}" >> $GITHUB_ENV
 
       - uses: docker/setup-buildx-action@v3
 
@@ -49,11 +60,16 @@ jobs:
           file: frontend/Dockerfile
           build-args: |
             VERSION=${{ env.VERSION }}
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          push: >-
+            ${{ github.event_name == 'push' &&
+                github.ref == 'refs/heads/main' }}
           tags: |
             ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }}
-            ${{ github.ref_type == 'tag' &&
-                format('{0}:{1}', env.RAG_EVAL_UI_IMAGE,
-                       github.ref_name) || '' }}
+            ${{ github.ref_type == 'tag' && env.SEMANTIC_VERSION == 'true' &&
+                format('{0}:v{1}', env.RAG_EVAL_UI_IMAGE, env.VERSION) ||
+                '' }}
+            ${{ github.ref_type == 'tag' && env.SEMANTIC_VERSION == 'false' &&
+                format('{0}:{1}', env.RAG_EVAL_UI_IMAGE, github.ref_name) ||
+                '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
