@@ -13,10 +13,12 @@ name: Frontend Pipeline
       - 'frontend/**'
 
 permissions:
-  contents: read
+  contents: write
   security-events: write
   actions: read
   packages: write
+  issues: write
+  pull-requests: write
 
 jobs:
   # Parallel execution of lint, security-scan, and test workflows
@@ -32,19 +34,10 @@ jobs:
     name: Run Test
     uses: ./.github/workflows/frontend-test.yaml
 
-  # Semantic release - only on main branch pushes
-  semantic-release:
-    name: Semantic Release
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: [lint, security-scan, test]
-    uses: ./.github/workflows/frontend-semantic-release.yaml
-
   # Sequential build stage - runs only after parallel jobs succeed
+  # Semantic release is integrated into build process to ensure release only happens after successful build
   build-and-push:
     name: Build and Push
-    needs: [lint, security-scan, test, semantic-release]
+    needs: [lint, security-scan, test]
     if: always() && !cancelled() && !failure() && (needs.lint.result == 'success' && needs.security-scan.result == 'success' && needs.test.result == 'success')
     uses: ./.github/workflows/frontend-build-and-push.yaml
-    with:
-      semantic-version: ${{ needs.semantic-release.outputs.new-release-version || '' }}
-      use-semantic-version: ${{ needs.semantic-release.outputs.new-release-published == 'true' }}
