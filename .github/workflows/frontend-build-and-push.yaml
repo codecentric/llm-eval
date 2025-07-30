@@ -5,6 +5,16 @@ name: Frontend Build & Push
 "on":
   workflow_dispatch:
   workflow_call:
+    inputs:
+      semantic-version:
+        description: 'Semantic version from semantic-release'
+        required: false
+        type: string
+      use-semantic-version:
+        description: 'Whether to use semantic version for tagging'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -23,7 +33,10 @@ jobs:
       - name: Set version
         id: version
         run: |
-          if [ "${{ github.ref_type }}" == "tag" ]; then
+          if [ "${{ inputs.use-semantic-version }}" == "true" ] && [ -n "${{ inputs.semantic-version }}" ]; then
+            echo "VERSION=${{ inputs.semantic-version }}" >> $GITHUB_ENV
+            echo "Using semantic version: ${{ inputs.semantic-version }}"
+          elif [ "${{ github.ref_type }}" == "tag" ]; then
             echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
           else
             echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
@@ -52,6 +65,8 @@ jobs:
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: |
             ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }}
+            ${{ inputs.use-semantic-version == 'true' && 
+                format('{0}:{1}', env.RAG_EVAL_UI_IMAGE, env.VERSION) || '' }}
             ${{ github.ref_type == 'tag' &&
                 format('{0}:{1}', env.RAG_EVAL_UI_IMAGE,
                        github.ref_name) || '' }}

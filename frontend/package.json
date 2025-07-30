@@ -11,7 +11,8 @@
     "test:coverage": "vitest run --coverage",
     "lint": "next lint --max-warnings=0",
     "lint:fix": "next lint --fix",
-    "generate-api": "openapi-ts"
+    "generate-api": "openapi-ts",
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "@heroui/react": "^2.7.6",
@@ -54,6 +55,9 @@
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.63.0",
     "@mdx-js/rollup": "^3.1.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.3",
     "@tailwindcss/typography": "^0.5.16",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
@@ -78,6 +82,7 @@
     "jsdom": "^26.0.0",
     "postcss": "^8",
     "prettier": "^3.4.2",
+    "semantic-release": "^24.2.7",
     "tailwindcss": "^3.4.17",
     "typescript": "^5",
     "vite-tsconfig-paths": "^5.1.4",
