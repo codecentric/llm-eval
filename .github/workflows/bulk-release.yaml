@@ -1,0 +1,93 @@
+---
+name: Bulk Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  packages: write
+
+jobs:
+  release:
+    name: Bulk Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      packages: write
+    outputs:
+      frontend-released: ${{ steps.release.outputs.frontend-released }}
+      backend-released: ${{ steps.release.outputs.backend-released }}
+      frontend-version: ${{ steps.release.outputs.frontend-version }}
+      backend-version: ${{ steps.release.outputs.backend-version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run zx-bulk-release
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run release
+          
+          # Check if releases were created and extract versions
+          if [ -f "frontend/package.json" ]; then
+            FRONTEND_VERSION=$(node -p "require('./frontend/package.json').version")
+            echo "frontend-version=$FRONTEND_VERSION" >> $GITHUB_OUTPUT
+            # Check if git tag exists for frontend
+            if git tag -l | grep -q "frontend-v$FRONTEND_VERSION"; then
+              echo "frontend-released=true" >> $GITHUB_OUTPUT
+            else
+              echo "frontend-released=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+          
+          if [ -f "backend/pyproject.toml" ]; then
+            BACKEND_VERSION=$(python3 -c "import tomllib; f=open('backend/pyproject.toml', 'rb'); data=tomllib.load(f); print(data['tool']['poetry']['version'])")
+            echo "backend-version=$BACKEND_VERSION" >> $GITHUB_OUTPUT
+            # Check if git tag exists for backend  
+            if git tag -l | grep -q "backend-v$BACKEND_VERSION"; then
+              echo "backend-released=true" >> $GITHUB_OUTPUT
+            else
+              echo "backend-released=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+  frontend-build-and-push:
+    name: Frontend Build and Push
+    needs: [release]
+    if: needs.release.outputs.frontend-released == 'true'
+    uses: ./.github/workflows/frontend-build-and-push.yaml
+    secrets: inherit
+    with:
+      version: ${{ needs.release.outputs.frontend-version }}
+
+  backend-build-and-push:
+    name: Backend Build and Push  
+    needs: [release]
+    if: needs.release.outputs.backend-released == 'true'
+    uses: ./.github/workflows/backend-build-and-push.yaml
+    secrets: inherit
+    with:
+      version: ${{ needs.release.outputs.backend-version }}

@@ -35,7 +35,7 @@ jobs:
     uses: ./.github/workflows/frontend-test.yaml
 
   # Sequential build stage - runs only after parallel jobs succeed
-  # Semantic release is integrated into build process to ensure release only happens after successful build
+  # Bulk release handles versioning for both frontend and backend together
   build-and-push:
     name: Build and Push
     needs: [lint, security-scan, test]

@@ -1,0 +1,5 @@
+{
+  "ghRelease": true,
+  "changelog": "changelog",
+  "npmFetch": false
+}

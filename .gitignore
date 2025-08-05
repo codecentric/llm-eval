@@ -2,6 +2,9 @@
 .env
 
 
+# node modules
+node_modules/
+
 http-client.private.env.json
 .vector_db
 .obsidian

@@ -4,7 +4,17 @@ name: Frontend Build & Push
 # Migrated from GitLab CI - supports manual dispatch
 "on":
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to tag the Docker image with'
+        required: false
+        type: string
   workflow_call:
+    inputs:
+      version:
+        description: 'Version to tag the Docker image with'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -79,38 +89,19 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # Only run semantic release after successful build on main branch
-      - name: Run semantic-release
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        id: semantic
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd frontend
-          npm run semantic-release
-
-      # If semantic release created a new version, tag and push the Docker image with semantic version
+      # Tag and push semantic version if version was provided
       - name: Tag and push semantic version
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.semantic.outcome == 'success'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && inputs.version != ''
         run: |
-          cd frontend
-          # Get the version from package.json after semantic-release
-          NEW_VERSION=$(node -p "require('./package.json').version")
-          if [ -n "$NEW_VERSION" ] && [ "$NEW_VERSION" != "null" ]; then
-            echo "Semantic release created version: $NEW_VERSION"
-            # Create frontend-prefixed version tag
-            FRONTEND_VERSION="frontend-v$NEW_VERSION"
-            echo "Creating release tag: $FRONTEND_VERSION"
-            
-            # Create and push git tag for frontend release
-            git tag "$FRONTEND_VERSION"
-            git push origin "$FRONTEND_VERSION"
-            
-            # Tag the existing image with the frontend-prefixed semantic version
-            docker pull ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }}
-            docker tag ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }} ${{ env.RAG_EVAL_UI_IMAGE }}:$FRONTEND_VERSION
-            docker push ${{ env.RAG_EVAL_UI_IMAGE }}:$FRONTEND_VERSION
-            echo "Tagged and pushed image with frontend version: $FRONTEND_VERSION"
-          else
-            echo "No new version was created by semantic-release"
-          fi
+          # Use the version provided by the bulk release workflow
+          NEW_VERSION="${{ inputs.version }}"
+          echo "Using version from bulk release: $NEW_VERSION"
+          # Create frontend-prefixed version tag
+          FRONTEND_VERSION="frontend-v$NEW_VERSION"
+          echo "Using release tag: $FRONTEND_VERSION"
+          
+          # Tag the existing image with the frontend-prefixed semantic version
+          docker pull ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }}
+          docker tag ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }} ${{ env.RAG_EVAL_UI_IMAGE }}:$FRONTEND_VERSION
+          docker push ${{ env.RAG_EVAL_UI_IMAGE }}:$FRONTEND_VERSION
+          echo "Tagged and pushed image with frontend version: $FRONTEND_VERSION"

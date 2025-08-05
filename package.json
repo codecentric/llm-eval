@@ -1,0 +1,19 @@
+{
+  "name": "llm-eval",
+  "version": "1.0.0",
+  "description": "A flexible, extensible, and reproducible framework for evaluating LLM workflows, applications, retrieval-augmented generation pipelines, and standalone models across custom and standard datasets.",
+  "main": "index.js",
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "zx-bulk-release"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "zx-bulk-release": "^2.15.31"
+  }
+}

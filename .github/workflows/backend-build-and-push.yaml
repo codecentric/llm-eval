@@ -4,7 +4,17 @@ name:  Backend Build & Push
 # Migrated from GitLab CI - supports manual dispatch
 "on":
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to tag the Docker image with'
+        required: false
+        type: string
   workflow_call:
+    inputs:
+      version:
+        description: 'Version to tag the Docker image with'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -59,3 +69,20 @@ jobs:
                        github.ref_name) || '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # Tag and push semantic version if version was provided
+      - name: Tag and push semantic version
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && inputs.version != ''
+        run: |
+          # Use the version provided by the bulk release workflow
+          NEW_VERSION="${{ inputs.version }}"
+          echo "Using version from bulk release: $NEW_VERSION"
+          # Create backend-prefixed version tag
+          BACKEND_VERSION="backend-v$NEW_VERSION"
+          echo "Using release tag: $BACKEND_VERSION"
+          
+          # Tag the existing image with the backend-prefixed semantic version
+          docker pull ${{ env.LLM_EVAL_BACKEND_IMAGE }}:${{ env.SHORT_SHA }}
+          docker tag ${{ env.LLM_EVAL_BACKEND_IMAGE }}:${{ env.SHORT_SHA }} ${{ env.LLM_EVAL_BACKEND_IMAGE }}:$BACKEND_VERSION
+          docker push ${{ env.LLM_EVAL_BACKEND_IMAGE }}:$BACKEND_VERSION
+          echo "Tagged and pushed image with backend version: $BACKEND_VERSION"
