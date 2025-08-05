@@ -12,7 +12,8 @@
     [
       "@semantic-release/npm",
       {
-        "npmPublish": false
+        "npmPublish": false,
+        "updatePackageJson": false
       }
     ],
     [
