@@ -16,7 +16,7 @@
         "assets": [
           {
             "path": "CHANGELOG.md",
-            "label": "Changelog-Test"
+            "label": "Changelog"
           }
         ]
       }
