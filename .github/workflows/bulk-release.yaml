@@ -51,27 +51,30 @@ jobs:
         run: |
           npm run release
           
-          # Check if releases were created and extract versions
-          if [ -f "frontend/package.json" ]; then
-            FRONTEND_VERSION=$(node -p "require('./frontend/package.json').version")
+          # Check if releases were created and extract versions from tags
+          LATEST_TAGS=$(git tag -l | tail -10)
+          echo "Latest tags: $LATEST_TAGS"
+          
+          # Check for frontend release
+          FRONTEND_TAG=$(git tag -l | grep "rag-eval-ui" | tail -1)
+          if [ -n "$FRONTEND_TAG" ]; then
+            echo "frontend-released=true" >> $GITHUB_OUTPUT
+            FRONTEND_VERSION=$(echo "$FRONTEND_TAG" | grep -o 'v\?[0-9]\+\.[0-9]\+\.[0-9]\+[^-]*' | head -1)
             echo "frontend-version=$FRONTEND_VERSION" >> $GITHUB_OUTPUT
-            # Check if git tag exists for frontend
-            if git tag -l | grep -q "frontend-v$FRONTEND_VERSION"; then
-              echo "frontend-released=true" >> $GITHUB_OUTPUT
-            else
-              echo "frontend-released=false" >> $GITHUB_OUTPUT
-            fi
+            echo "frontend-tag=$FRONTEND_TAG" >> $GITHUB_OUTPUT
+          else
+            echo "frontend-released=false" >> $GITHUB_OUTPUT
           fi
           
-          if [ -f "backend/pyproject.toml" ]; then
-            BACKEND_VERSION=$(python3 -c "import tomllib; f=open('backend/pyproject.toml', 'rb'); data=tomllib.load(f); print(data['tool']['poetry']['version'])")
+          # Check for backend release
+          BACKEND_TAG=$(git tag -l | grep "llm-eval-backend" | tail -1)
+          if [ -n "$BACKEND_TAG" ]; then
+            echo "backend-released=true" >> $GITHUB_OUTPUT
+            BACKEND_VERSION=$(echo "$BACKEND_TAG" | grep -o 'v\?[0-9]\+\.[0-9]\+\.[0-9]\+[^-]*' | head -1)
             echo "backend-version=$BACKEND_VERSION" >> $GITHUB_OUTPUT
-            # Check if git tag exists for backend  
-            if git tag -l | grep -q "backend-v$BACKEND_VERSION"; then
-              echo "backend-released=true" >> $GITHUB_OUTPUT
-            else
-              echo "backend-released=false" >> $GITHUB_OUTPUT
-            fi
+            echo "backend-tag=$BACKEND_TAG" >> $GITHUB_OUTPUT
+          else
+            echo "backend-released=false" >> $GITHUB_OUTPUT
           fi
 
   frontend-build-and-push:

@@ -1,0 +1,14 @@
+{
+  "name": "llm-eval-backend",
+  "version": "0.1.0",
+  "description": "Backend for LLM evaluation pipeline",
+  "main": "main.py",
+  "scripts": {
+    "test": "python -m pytest",
+    "lint": "ruff check .",
+    "start": "python -m uvicorn llm_eval.main:app --host 0.0.0.0 --port 8000"
+  },
+  "keywords": ["llm", "evaluation", "python", "fastapi"],
+  "author": "codecentric",
+  "license": "ISC"
+}

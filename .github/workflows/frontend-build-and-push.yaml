@@ -96,12 +96,16 @@ jobs:
           # Use the version provided by the bulk release workflow
           NEW_VERSION="${{ inputs.version }}"
           echo "Using version from bulk release: $NEW_VERSION"
-          # Create frontend-prefixed version tag
+          # Create frontend-prefixed version tag for Docker
           FRONTEND_VERSION="frontend-v$NEW_VERSION"
-          echo "Using release tag: $FRONTEND_VERSION"
+          echo "Using Docker tag: $FRONTEND_VERSION"
           
           # Tag the existing image with the frontend-prefixed semantic version
           docker pull ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }}
           docker tag ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }} ${{ env.RAG_EVAL_UI_IMAGE }}:$FRONTEND_VERSION
           docker push ${{ env.RAG_EVAL_UI_IMAGE }}:$FRONTEND_VERSION
-          echo "Tagged and pushed image with frontend version: $FRONTEND_VERSION"
+          
+          # Also tag with just the version number
+          docker tag ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }} ${{ env.RAG_EVAL_UI_IMAGE }}:$NEW_VERSION
+          docker push ${{ env.RAG_EVAL_UI_IMAGE }}:$NEW_VERSION
+          echo "Tagged and pushed image with frontend version: $FRONTEND_VERSION and $NEW_VERSION"
