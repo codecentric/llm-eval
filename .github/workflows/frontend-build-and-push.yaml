@@ -82,26 +82,11 @@ jobs:
         run: |
           cd frontend
           npm run semantic-release
-
-      # If semantic release created a new version, tag and push the Docker image with semantic version
-      - name: Tag and push semantic version
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.semantic.outcome == 'success'
-        run: |
-          cd frontend
-          # Get the version from package.json after semantic-release
           NEW_VERSION=$(node -p "require('./package.json').version")
+          FRONTEND_VERSION="frontend-v$NEW_VERSION"
           
-          if [ -n "$NEW_VERSION" ] && [ "$NEW_VERSION" != "null" ]; then
-            echo "Semantic release created version: $NEW_VERSION"
-            # Create frontend-prefixed version tag
-            FRONTEND_VERSION="frontend-v$NEW_VERSION"
-            echo "Creating release tag: $FRONTEND_VERSION"
-            
-            # Tag the existing image with the frontend-prefixed semantic version
-            docker pull ${{ env.FRONTEND_IMAGE }}:${{ env.SHORT_SHA }}
-            docker tag ${{ env.FRONTEND_IMAGE }}:${{ env.SHORT_SHA }} ${{ env.FRONTEND_IMAGE }}:$FRONTEND_VERSION
-            docker push ${{ env.FRONTEND_IMAGE }}:$FRONTEND_VERSION
-            echo "Tagged and pushed image with frontend version: $FRONTEND_VERSION"
-          else
-            echo "No new version was created by semantic-release"
-          fi
+          # Tag the existing image with the frontend-prefixed semantic version
+          docker pull ${{ env.FRONTEND_IMAGE }}:${{ env.SHORT_SHA }}
+          docker tag ${{ env.FRONTEND_IMAGE }}:${{ env.SHORT_SHA }} ${{ env.FRONTEND_IMAGE }}:$FRONTEND_VERSION
+          docker push ${{ env.FRONTEND_IMAGE }}:$FRONTEND_VERSION
+          echo "Tagged and pushed image with frontend version: $FRONTEND_VERSION"
