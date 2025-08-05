@@ -82,8 +82,10 @@ jobs:
         run: |
           cd frontend
           npm run semantic-release
+          
           NEW_VERSION=$(node -p "require('./package.json').version")
           FRONTEND_VERSION="frontend-v$NEW_VERSION"
+          
           
           # Tag the existing image with the frontend-prefixed semantic version
           docker pull ${{ env.FRONTEND_IMAGE }}:${{ env.SHORT_SHA }}
