@@ -44,15 +44,12 @@ jobs:
         run: |
           echo "SHORT_SHA=${GITHUB_SHA:0:8}" >> $GITHUB_ENV
           # Set image name for frontend
-          RAG_EVAL_UI_IMAGE="ghcr.io/${{ github.repository }}/rag-eval-ui"
-          echo "RAG_EVAL_UI_IMAGE=${RAG_EVAL_UI_IMAGE}" >> $GITHUB_ENV
+          FRONTEND_IMAGE="ghcr.io/${{ github.repository }}/frontend"
+          echo "FRONTEND_IMAGE=${FRONTEND_IMAGE}" >> $GITHUB_ENV
           
           # Set initial version for build
-          if [ "${{ github.ref_type }}" == "tag" ]; then
-            echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
-          else
-            echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
-          fi
+          echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
+         
 
       - uses: docker/setup-buildx-action@v3
 
@@ -72,10 +69,7 @@ jobs:
             VERSION=${{ env.VERSION }}
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: |
-            ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }}
-            ${{ github.ref_type == 'tag' &&
-                format('{0}:{1}', env.RAG_EVAL_UI_IMAGE,
-                       github.ref_name) || '' }}
+            ${{ env.FRONTEND_IMAGE }}:${{ env.SHORT_SHA }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -96,6 +90,7 @@ jobs:
           cd frontend
           # Get the version from package.json after semantic-release
           NEW_VERSION=$(node -p "require('./package.json').version")
+          
           if [ -n "$NEW_VERSION" ] && [ "$NEW_VERSION" != "null" ]; then
             echo "Semantic release created version: $NEW_VERSION"
             # Create frontend-prefixed version tag
@@ -107,9 +102,9 @@ jobs:
             git push origin "$FRONTEND_VERSION"
             
             # Tag the existing image with the frontend-prefixed semantic version
-            docker pull ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }}
-            docker tag ${{ env.RAG_EVAL_UI_IMAGE }}:${{ env.SHORT_SHA }} ${{ env.RAG_EVAL_UI_IMAGE }}:$FRONTEND_VERSION
-            docker push ${{ env.RAG_EVAL_UI_IMAGE }}:$FRONTEND_VERSION
+            docker pull ${{ env.FRONTEND_IMAGE }}:${{ env.SHORT_SHA }}
+            docker tag ${{ env.FRONTEND_IMAGE }}:${{ env.SHORT_SHA }} ${{ env.FRONTEND_IMAGE }}:$FRONTEND_VERSION
+            docker push ${{ env.FRONTEND_IMAGE }}:$FRONTEND_VERSION
             echo "Tagged and pushed image with frontend version: $FRONTEND_VERSION"
           else
             echo "No new version was created by semantic-release"
