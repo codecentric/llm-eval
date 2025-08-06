@@ -1,5 +1,5 @@
 ---
-name:  Backend Build & Push
+name: Backend Build & Push
 
 # Migrated from GitLab CI - supports manual dispatch
 "on":
@@ -54,10 +54,10 @@ jobs:
         id: pre-version
         run: |
           echo "SHORT_SHA=${GITHUB_SHA:0:8}" >> $GITHUB_ENV
-          # Set image name for backend  
+          # Set image name for backend
           BACKEND_IMAGE="ghcr.io/${{ github.repository }}/backend"
           echo "BACKEND_IMAGE=${BACKEND_IMAGE}" >> $GITHUB_ENV
-          
+
           # Set initial version for build
           echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
 
@@ -77,7 +77,9 @@ jobs:
           file: backend/Dockerfile
           build-args: |
             VERSION=${{ env.VERSION }}
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          push: >-
+            ${{ github.event_name == 'push' &&
+            github.ref == 'refs/heads/main' }}
           tags: |
             ${{ env.BACKEND_IMAGE }}:${{ env.SHORT_SHA }}
           cache-from: type=gha
@@ -92,13 +94,14 @@ jobs:
         run: |
           cd backend
           npm run semantic-release
-          
+
           NEW_VERSION=$(node -p "require('./package.json').version")
           BACKEND_VERSION="backend-v$NEW_VERSION"
-          
-          
+
+
           # Tag the existing image with the backend-prefixed semantic version
           docker pull ${{ env.BACKEND_IMAGE }}:${{ env.SHORT_SHA }}
-          docker tag ${{ env.BACKEND_IMAGE }}:${{ env.SHORT_SHA }} ${{ env.BACKEND_IMAGE }}:$BACKEND_VERSION
+          docker tag ${{ env.BACKEND_IMAGE }}:${{ env.SHORT_SHA }} \
+            ${{ env.BACKEND_IMAGE }}:$BACKEND_VERSION
           docker push ${{ env.BACKEND_IMAGE }}:$BACKEND_VERSION
           echo "Tagged and pushed image with backend version: $BACKEND_VERSION"
