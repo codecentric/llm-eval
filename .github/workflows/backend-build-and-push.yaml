@@ -1,5 +1,5 @@
 ---
-name:  Backend Build & Push
+name: Backend Build & Push
 
 # Migrated from GitLab CI - supports manual dispatch
 "on":
@@ -7,7 +7,9 @@ name:  Backend Build & Push
   workflow_call:
 
 permissions:
-  contents: read
+  contents: write
+  issues: write
+  pull-requests: write
   packages: write
 
 jobs:
@@ -15,25 +17,49 @@ jobs:
   build-and-push-backend:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
+      issues: write
+      pull-requests: write
       packages: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set version
-        id: version
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Poetry
+        run: pip install --root-user-action=ignore poetry --quiet
+
+      - name: Install Python dependencies
+        working-directory: backend
+        run: poetry install --quiet
+
+      - name: Setup Node.js for semantic-release
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Node.js dependencies for semantic-release
         run: |
-          if [ "${{ github.ref_type }}" == "tag" ]; then
-            echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
-          else
-            echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
-          fi
+          cd backend
+          npm ci
+
+      - name: Set initial version (pre-build)
+        id: pre-version
+        run: |
           echo "SHORT_SHA=${GITHUB_SHA:0:8}" >> $GITHUB_ENV
           # Set image name for backend
-          LLM_EVAL_BACKEND_IMAGE="ghcr.io/${{ github.repository }}"
-          LLM_EVAL_BACKEND_IMAGE="${LLM_EVAL_BACKEND_IMAGE}/llm-eval-backend"
-          echo "LLM_EVAL_BACKEND_IMAGE=${LLM_EVAL_BACKEND_IMAGE}" >> \
-            $GITHUB_ENV
+          BACKEND_IMAGE="ghcr.io/${{ github.repository }}/backend"
+          echo "BACKEND_IMAGE=${BACKEND_IMAGE}" >> $GITHUB_ENV
+
+          # Set initial version for build
+          echo "VERSION=${{ github.sha }}" >> $GITHUB_ENV
 
       - uses: docker/setup-buildx-action@v3
 
@@ -51,11 +77,31 @@ jobs:
           file: backend/Dockerfile
           build-args: |
             VERSION=${{ env.VERSION }}
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          push: >-
+            ${{ github.event_name == 'push' &&
+            github.ref == 'refs/heads/main' }}
           tags: |
-            ${{ env.LLM_EVAL_BACKEND_IMAGE }}:${{ env.SHORT_SHA }}
-            ${{ github.ref_type == 'tag' &&
-                format('{0}:{1}', env.LLM_EVAL_BACKEND_IMAGE,
-                       github.ref_name) || '' }}
+            ${{ env.BACKEND_IMAGE }}:${{ env.SHORT_SHA }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # Only run semantic release after successful build on main branch
+      - name: Run semantic-release
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd backend
+          npm run semantic-release
+
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          BACKEND_VERSION="backend-v$NEW_VERSION"
+
+
+          # Tag the existing image with the backend-prefixed semantic version
+          docker pull ${{ env.BACKEND_IMAGE }}:${{ env.SHORT_SHA }}
+          docker tag ${{ env.BACKEND_IMAGE }}:${{ env.SHORT_SHA }} \
+            ${{ env.BACKEND_IMAGE }}:$BACKEND_VERSION
+          docker push ${{ env.BACKEND_IMAGE }}:$BACKEND_VERSION
+          echo "Tagged and pushed image with backend version: $BACKEND_VERSION"

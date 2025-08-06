@@ -1,0 +1,14 @@
+{
+  "name": "rag-eval-backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "semantic-release": "semantic-release"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.3",
+    "semantic-release": "^24.2.7"
+  }
+}
