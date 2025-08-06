@@ -101,7 +101,6 @@ jobs:
 
           # Tag the existing image with the backend-prefixed semantic version
           docker pull ${{ env.BACKEND_IMAGE }}:${{ env.SHORT_SHA }}
-          docker tag ${{ env.BACKEND_IMAGE }}:${{ env.SHORT_SHA }} \
-            ${{ env.BACKEND_IMAGE }}:$BACKEND_VERSION
+          docker tag ${{ env.BACKEND_IMAGE }}:${{ env.SHORT_SHA }} ${{ env.BACKEND_IMAGE }}:$BACKEND_VERSION
           docker push ${{ env.BACKEND_IMAGE }}:$BACKEND_VERSION
           echo "Tagged and pushed image with backend version: $BACKEND_VERSION"
