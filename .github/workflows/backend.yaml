@@ -13,10 +13,12 @@ name: Backend Pipeline
       - 'backend/**'
 
 permissions:
-  contents: read
+  contents: write
   security-events: write
   actions: read
   packages: write
+  issues: write
+  pull-requests: write
 
 jobs:
   # Parallel execution of lint, security-scan, and test workflows
