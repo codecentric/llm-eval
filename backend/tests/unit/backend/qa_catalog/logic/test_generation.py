@@ -87,9 +87,9 @@ def catalog_generator_config(
                 type=generator_type,
                 sample_count=10,
                 knowledge_graph_location=None,
-                query_distribution={
-                    RagasQACatalogQuerySynthesizer.SINGLE_HOP_SPECIFIC: 1.0,
-                },
+                query_distribution=[
+                    RagasQACatalogQuerySynthesizer.SINGLE_HOP_SPECIFIC,
+                ],
                 personas=[
                     RagasQACatalogGeneratorPersona(
                         name="test-persona", description="test description"

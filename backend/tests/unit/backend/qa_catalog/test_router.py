@@ -300,9 +300,9 @@ class TestQACatalogRouter:
                     "type": "RAGAS",
                     "knowledge_graph_location": "/tmp/somefile.pdf",
                     "sample_count": 5,
-                    "query_distribution": {
-                        "SINGLE_HOP_SPECIFIC": 1.5,
-                    },
+                    "query_distribution": [
+                        "SINGLE_HOP_SPECIFIC",
+                    ],
                     "personas": [
                         {"name": "person1", "description": "Beschreibung Persona 1"}
                     ],
