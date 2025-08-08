@@ -10,17 +10,15 @@ from loguru import logger
 from pydantic import ValidationError
 from ragas.embeddings import LangchainEmbeddingsWrapper
 from ragas.testset import TestsetGenerator
+from ragas.testset import persona as ragas_persona
 from ragas.testset.graph import KnowledgeGraph, Node, NodeType
-from ragas.testset.persona import Persona
 from ragas.testset.synthesizers import (
     BaseSynthesizer,
     MultiHopAbstractQuerySynthesizer,
     MultiHopSpecificQuerySynthesizer,
     SingleHopSpecificQuerySynthesizer,
 )
-from ragas.testset.synthesizers.generate import (
-    LangchainLLMWrapper,
-)
+from ragas.testset.synthesizers.generate import LangchainLLMWrapper
 from ragas.testset.synthesizers.testset_schema import Testset
 from ragas.testset.transforms import (
     EmbeddingExtractor,
@@ -130,7 +128,7 @@ class RagasQACatalogGenerator(
 
         self.personas = (
             [
-                Persona(name=p.name, role_description=p.description)
+                ragas_persona.Persona(name=p.name, role_description=p.description)
                 for p in self.config.personas
             ]
             if self.config.personas
@@ -237,7 +235,7 @@ class RagasQACatalogGenerator(
 
     def apply_knowledge_graph_transformations(
         self,
-        kg: KnowledgeGraph,
+        knowledge_graph: KnowledgeGraph,
     ) -> None:
         headline_extractor = HeadlinesExtractor(llm=self.llm, max_num=20)
         headline_splitter = HeadlineSplitter(max_tokens=1500, min_tokens=100)
@@ -264,14 +262,15 @@ class RagasQACatalogGenerator(
             ner_extractor,
         ]
 
-        apply_transforms(kg, transforms=transforms)
+        apply_transforms(knowledge_graph, transforms=transforms)
 
     def create_knowledge_graph(self) -> KnowledgeGraph:
         """
         Loads the knowledge graph if already exists
         and compares it's nodes with the current documents.
-        If the existent graph has these documents already it uses the existent kg
-        otherwise create a new kg out ouf the documents
+        If the existent graph has these documents
+        already it uses the existent knowledge graph
+        otherwise create a new knowledge graph out ouf the documents
         """
 
         docs = self._load_and_process_documents()  # chunks of documents
@@ -279,13 +278,13 @@ class RagasQACatalogGenerator(
             raise RuntimeError("No documents found")
 
         chunks = self.split_documents(docs)
-        kg = KnowledgeGraph(
+        knowledge_graph = KnowledgeGraph(
             nodes=self._create_knowledge_graph_nodes(chunks),
         )
 
-        self.apply_knowledge_graph_transformations(kg)
+        self.apply_knowledge_graph_transformations(knowledge_graph)
 
-        return kg
+        return knowledge_graph
 
     @deprecated("Until we have a better way to handle knowledge graph caching")
     def load_exiting_knowledge_graph(
@@ -367,12 +366,13 @@ class RagasQACatalogGenerator(
         self,
         collect_samples: Callable[[list[SyntheticQAPair]], Coroutine],
     ) -> None:
-        kg = self.create_knowledge_graph()
+        knowledge_graph = self.create_knowledge_graph()
 
         if not self.personas:
-            from ragas.testset.persona import generate_personas_from_kg
-
-            self.personas = generate_personas_from_kg(kg, self.llm)
+            self.personas = ragas_persona.generate_personas_from_kg(
+                knowledge_graph,
+                self.llm,
+            )
             if not self.personas:
                 raise ValueError("Failed to generate personas")
 
@@ -381,11 +381,11 @@ class RagasQACatalogGenerator(
         generator = TestsetGenerator(
             llm=self.llm,
             embedding_model=self.embeddings,
-            knowledge_graph=kg,
+            knowledge_graph=knowledge_graph,
             persona_list=self.personas,
         )
 
-        query_distribution = self.create_query_distribution(kg)
+        query_distribution = self.create_query_distribution(knowledge_graph)
 
         testset = self.generate_testset(
             generator,

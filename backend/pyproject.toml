@@ -34,9 +34,9 @@ cryptography = "^44.0.2"
 pyjwt = "^2.10.1"
 openpyxl = "^3.1.5"
 celery = { extras = ["redis"], version = "^5.4.0" }
-ragas = "^0.2.14"
 pydantic-settings = "^2.9.1"
 rapidfuzz = "^3.13.0"
+ragas = "^0.3.0"
 
 [tool.poetry.group.dev.dependencies]
 psycopg2-binary = "^2.9.9"
