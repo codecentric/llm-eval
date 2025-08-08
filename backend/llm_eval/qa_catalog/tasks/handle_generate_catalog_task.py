@@ -1,8 +1,9 @@
 from loguru import logger
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from llm_eval.qa_catalog.models import QACatalogGenerationData
 from llm_eval.tasks import app
-from llm_eval.utils.task import async_task
+from llm_eval.utils.task import async_task, with_session
 
 
 def submit_generate_catalog_task(
@@ -20,7 +21,9 @@ def submit_generate_catalog_task(
     max_retries=10,
 )
 @async_task
+@with_session
 async def execute_generate_catalog_task(
+    session: AsyncSession,
     catalog_id: str,
     json_data: str,
 ) -> None:
@@ -32,4 +35,4 @@ async def execute_generate_catalog_task(
     )
     from llm_eval.qa_catalog.logic.generation import generate_catalog
 
-    await generate_catalog(catalog_id, data)
+    await generate_catalog(session, catalog_id, data)
