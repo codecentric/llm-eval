@@ -6,8 +6,8 @@ import {
   evaluationResultsGet,
   evaluationsGet,
   EvaluationStatus,
-  RagEvalBackendEvalEvaluateResultsRouterEvaluationResult,
-  RagEvalBackendEvalEvaluationsModelsEvaluationResult,
+  LlmEvalEvalEvaluateResultsRouterEvaluationResult,
+  LlmEvalEvalEvaluationsModelsEvaluationResult,
   TestCaseStatus,
 } from "@/app/client";
 import { expectValue } from "@/app/test-utils/details-page";
@@ -19,92 +19,89 @@ import Page from "./page";
 vi.mock("@/app/client");
 
 describe("Evaluation Result Page", () => {
-  const fullTestCase: RagEvalBackendEvalEvaluateResultsRouterEvaluationResult =
-    {
-      id: "tc1",
-      actualOutput: "actual",
-      expectedOutput: "expected",
-      status: TestCaseStatus.SUCCESS,
-      configurationId: "configId1",
-      configurationName: "configName1",
-      configurationVersion: "configVersion1",
-      context: ["context"],
-      input: "input",
-      metaData: {},
-      metricsData: [
-        {
-          id: "m1",
-          name: "metric1",
-          score: 0.5,
-          error: null,
-          evaluationModel: "evalModel1",
-          reason: "reason1",
-          success: true,
-          threshold: 0.3,
-          strictMode: true,
-        },
-        {
-          id: "m2",
-          name: "metric2",
-          score: 0.6,
-          error: "",
-          evaluationModel: "",
-          reason: "",
-          success: false,
-          threshold: 0.7,
-          strictMode: false,
-        },
-        {
-          id: "m3",
-          name: "metric3",
-          score: null,
-          error: "error3",
-          evaluationModel: null,
-          reason: null,
-          success: false,
-          threshold: 0.7,
-          strictMode: false,
-        },
-      ],
-      retrievalContext: ["retrievalContext"],
-      error: null,
-    };
+  const fullTestCase: LlmEvalEvalEvaluateResultsRouterEvaluationResult = {
+    id: "tc1",
+    actualOutput: "actual",
+    expectedOutput: "expected",
+    status: TestCaseStatus.SUCCESS,
+    configurationId: "configId1",
+    configurationName: "configName1",
+    configurationVersion: "configVersion1",
+    context: ["context"],
+    input: "input",
+    metaData: {},
+    metricsData: [
+      {
+        id: "m1",
+        name: "metric1",
+        score: 0.5,
+        error: null,
+        evaluationModel: "evalModel1",
+        reason: "reason1",
+        success: true,
+        threshold: 0.3,
+        strictMode: true,
+      },
+      {
+        id: "m2",
+        name: "metric2",
+        score: 0.6,
+        error: "",
+        evaluationModel: "",
+        reason: "",
+        success: false,
+        threshold: 0.7,
+        strictMode: false,
+      },
+      {
+        id: "m3",
+        name: "metric3",
+        score: null,
+        error: "error3",
+        evaluationModel: null,
+        reason: null,
+        success: false,
+        threshold: 0.7,
+        strictMode: false,
+      },
+    ],
+    retrievalContext: ["retrievalContext"],
+    error: null,
+  };
 
-  const minimalTestCase: RagEvalBackendEvalEvaluateResultsRouterEvaluationResult =
-    {
-      id: "tc1",
-      expectedOutput: "expected",
-      actualOutput: null,
-      status: TestCaseStatus.PENDING,
-      configurationId: null,
-      configurationName: null,
-      configurationVersion: null,
-      context: null,
-      input: "input",
-      metaData: null,
-      metricsData: [],
-      retrievalContext: null,
-      error: null,
-    };
+  const minimalTestCase: LlmEvalEvalEvaluateResultsRouterEvaluationResult = {
+    id: "tc1",
+    expectedOutput: "expected",
+    actualOutput: null,
+    status: TestCaseStatus.PENDING,
+    configurationId: null,
+    configurationName: null,
+    configurationVersion: null,
+    context: null,
+    input: "input",
+    metaData: null,
+    metricsData: [],
+    retrievalContext: null,
+    error: null,
+  };
 
-  const emptyTestCase: RagEvalBackendEvalEvaluateResultsRouterEvaluationResult =
-    {
-      id: "tc1",
-      expectedOutput: "expected",
-      actualOutput: "",
-      status: TestCaseStatus.PENDING,
-      configurationId: null,
-      configurationName: null,
-      configurationVersion: null,
-      context: [],
-      input: "input",
-      metaData: {},
-      metricsData: [],
-      retrievalContext: [],
-      error: null,
-    };
+  const emptyTestCase: LlmEvalEvalEvaluateResultsRouterEvaluationResult = {
+    id: "tc1",
+    expectedOutput: "expected",
+    actualOutput: "",
+    status: TestCaseStatus.PENDING,
+    configurationId: null,
+    configurationName: null,
+    configurationVersion: null,
+    context: [],
+    input: "input",
+    metaData: {},
+    metricsData: [],
+    retrievalContext: [],
+    error: null,
+  };
 
-  const evaluation: RagEvalBackendEvalEvaluationsModelsEvaluationResult = {
+  const evaluation: LlmEvalEvalEvaluationsModelsEvaluationResult = {
     id: "eval1",
     name: "evaluation",
     createdAt: "2021-01-01T00:00:00Z",
@@ -161,7 +158,7 @@ describe("Evaluation Result Page", () => {
   });
 
   const expectTestCase = async (
-    testCase: RagEvalBackendEvalEvaluateResultsRouterEvaluationResult,
+    testCase: LlmEvalEvalEvaluateResultsRouterEvaluationResult,
   ) => {
     await expectValue("EvaluationResultDetails.input", testCase.input);
     await expectValue(
@@ -213,7 +210,7 @@ describe("Evaluation Result Page", () => {
   };
 
   const mockApi = (
-    testCase: RagEvalBackendEvalEvaluateResultsRouterEvaluationResult,
+    testCase: LlmEvalEvalEvaluateResultsRouterEvaluationResult,
   ) => {
     vi.mocked(evaluationsGet).mockResolvedValue(
       successfulServiceResponse(evaluation),

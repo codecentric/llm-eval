@@ -17,8 +17,8 @@ import {
   ActiveQaCatalogGeneratorType,
   qaCatalogCreateDataSourceConfig,
   qaCatalogGenerate,
+  QaCatalogGenerationConfig,
   QaCatalogGenerationData,
-  RagasQaCatalogGeneratorConfig,
 } from "@/app/client";
 import { callApi } from "@/app/utils/backend-client/client";
 import { useRouter } from "@/i18n/routing";
@@ -109,7 +109,7 @@ export const QACatalogGeneratorFormWizard = ({
         generatorType: data.configuration.type,
       });
 
-      const config: RagasQaCatalogGeneratorConfig = {
+      const config: QaCatalogGenerationConfig = {
         ...data.configuration.config,
         type: data.configuration.type,
         knowledgeGraphLocation: null,
