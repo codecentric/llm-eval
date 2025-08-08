@@ -16,7 +16,7 @@ import { FormWizard, SubmitData } from "@/app/[locale]/components/form-wizard";
 import {
   evaluationsPatch,
   EvaluationUpdate,
-  RagEvalBackendEvalEvaluationsModelsEvaluationResult,
+  LlmEvalEvalEvaluationsModelsEvaluationResult,
 } from "@/app/client";
 import { EditOrigin } from "@/app/types/edit-origin";
 import { callApi } from "@/app/utils/backend-client/client";
@@ -32,7 +32,7 @@ const editSchema = z.object({
 const schemas = { default: editSchema };
 
 export type EvaluationEditFormWizardProps = {
-  evaluation: RagEvalBackendEvalEvaluationsModelsEvaluationResult;
+  evaluation: LlmEvalEvalEvaluationsModelsEvaluationResult;
   origin?: EditOrigin;
 };
 

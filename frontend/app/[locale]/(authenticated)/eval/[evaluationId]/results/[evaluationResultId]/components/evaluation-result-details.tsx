@@ -8,7 +8,7 @@ import {
   PropertyList,
   PropertyListItem,
 } from "@/app/[locale]/components/property-list";
-import { RagEvalBackendEvalEvaluateResultsRouterEvaluationResult as EvaluationResult } from "@/app/client";
+import { LlmEvalEvalEvaluateResultsRouterEvaluationResult as EvaluationResult } from "@/app/client";
 
 const TextValue = ({ children }: PropsWithChildren) => {
   return <div className="whitespace-pre-wrap overflow-x-auto">{children}</div>;
