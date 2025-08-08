@@ -30,11 +30,11 @@ def config() -> RagasQACatalogGeneratorConfig:
         type="RAGAS",
         knowledge_graph_location=None,
         sample_count=10,
-        query_distribution={
-            RagasQACatalogQuerySynthesizer.SINGLE_HOP_SPECIFIC: 0.5,
-            RagasQACatalogQuerySynthesizer.MULTI_HOP_SPECIFIC: 0.3,
-            RagasQACatalogQuerySynthesizer.MULTI_HOP_ABSTRACT: 0.2,
-        },
+        query_distribution=[
+            RagasQACatalogQuerySynthesizer.SINGLE_HOP_SPECIFIC,
+            RagasQACatalogQuerySynthesizer.MULTI_HOP_SPECIFIC,
+            RagasQACatalogQuerySynthesizer.MULTI_HOP_ABSTRACT,
+        ],
         personas=None,
     )
 
@@ -173,25 +173,17 @@ async def test_ragas_generator__load_and_process_documents_correctly(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("weights", [[0.5, 0.3, 0.0], [0.5, 1, 0.2]])
 @patch(
     "llm_eval.qa_catalog.generator.implementation.ragas.generator.RagasQACatalogGenerator.load_chat_model"
 )
-async def test_init_ragas_generator_fails_for_invalid_query_synthesizer(
+async def test_init_ragas_generator_fails_for_empty_query_distribution(
     _: MagicMock,
     config: RagasQACatalogGeneratorConfig,
     data_source_config: QACatalogGeneratorDataSourceConfig,
     ragas_model_config: RagasQACatalogGeneratorModelConfig,
-    weights: list[float],
 ) -> None:
-    invalid_query_synthesizer: dict = {
-        RagasQACatalogQuerySynthesizer.SINGLE_HOP_SPECIFIC: weights[0],
-        RagasQACatalogQuerySynthesizer.MULTI_HOP_ABSTRACT: weights[1],
-        RagasQACatalogQuerySynthesizer.MULTI_HOP_SPECIFIC: weights[2],
-    }
-
-    with pytest.raises(ValueError, match="distribution weights should sum up to 1"):
-        config.query_distribution = invalid_query_synthesizer
+    with pytest.raises(ValueError, match="At least one query synthesizer"):
+        config.query_distribution = []
         RagasQACatalogGenerator(config, data_source_config, ragas_model_config)
 
 
