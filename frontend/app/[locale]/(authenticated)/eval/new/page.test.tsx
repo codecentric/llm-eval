@@ -16,6 +16,7 @@ import {
   LlmEndpoint,
   llmEndpointsGet,
   llmEndpointsGetAll,
+  LlmEvalEvalEvaluationsModelsEvaluationResult,
   Metric,
   MetricConfigurationRead,
   metricsGetAll,
@@ -25,7 +26,6 @@ import {
   qaCatalogGetAll,
   QaCatalogPreview,
   QaCatalogStatus,
-  RagEvalBackendEvalEvaluationsModelsEvaluationResult,
 } from "@/app/client";
 import {
   expectComboBoxError,
@@ -278,7 +278,7 @@ describe("New Evaluation Page", () => {
   };
 
   const mockEvaluationCreate = () => {
-    const evaluation: RagEvalBackendEvalEvaluationsModelsEvaluationResult = {
+    const evaluation: LlmEvalEvalEvaluationsModelsEvaluationResult = {
       id: "1",
       name: "Test Execution",
       createdAt: "2021-09-01T00:00:00Z",

@@ -12,7 +12,7 @@ import {
   evaluationsGet,
   evaluationsPatch,
   EvaluationStatus,
-  RagEvalBackendEvalEvaluationsModelsEvaluationResult,
+  LlmEvalEvalEvaluationsModelsEvaluationResult,
 } from "@/app/client";
 import {
   expectInputError,
@@ -29,7 +29,7 @@ vi.mock("@/app/client");
 
 describe("Edit Evaluation Page", () => {
   const evaluationId = "123";
-  const testEvaluation: RagEvalBackendEvalEvaluationsModelsEvaluationResult = {
+  const testEvaluation: LlmEvalEvalEvaluationsModelsEvaluationResult = {
     id: evaluationId,
     name: "Evaluation Name",
     createdAt: "2022-01-01T00:00:00Z",
