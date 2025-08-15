@@ -47,7 +47,7 @@ A flexible, extensible, and reproducible framework for evaluating LLM workflows,
 
 LLM-Eval is an open-source toolkit designed to evaluate large language model workflows, applications, retrieval-augmented generation pipelines, and standalone models. Whether you're developing a conversational agent, a summarization service, or a RAG-based search tool, LLM-Eval provides a clear, reproducible framework to test and compare performance across providers, metrics, and datasets.
 
-*Key benefits include:* end-to-end evaluation of real-world applications, reproducible reports, and an extensible platform for custom metrics and datasets.
+_Key benefits include:_ end-to-end evaluation of real-world applications, reproducible reports, and an extensible platform for custom metrics and datasets.
 
 ## Getting Started
 
@@ -76,11 +76,14 @@ To run LLM-Eval locally (for evaluation and usage, not development), use our pre
    # Edit .env to add your API keys and secrets as needed
    ```
 
-   **Required:** Generate the encryption keys set to `CHANGEME` with the respective commands commented next to them in `.env`
+   **Required:**
+
+   - Generate the encryption keys set to `CHANGEME` with the respective commands commented next to them in `.env`
+   - Don't forget to set azure openai keys and the `AZURE_OPENAI_EMBEDDING_DEPLOYMENT=`
 
 3. **Enable host networking in docker desktop (for macos users):**
 
-    Go to `Settings -> Resources -> Network` and check `Enable host networking`, without this step on macos, the frontend wouldn't be reachable on localhost.
+   Go to `Settings -> Resources -> Network` and check `Enable host networking`, without this step on macos, the frontend wouldn't be reachable on localhost.
 
 4. **Start the stack:**
 
@@ -93,9 +96,9 @@ To run LLM-Eval locally (for evaluation and usage, not development), use our pre
    - Web UI: [http://localhost:3000](http://localhost:3000) (Default login: `username`:`password`)
    - API: [http://localhost:8070/docs](http://localhost:8070/docs)
 
-8. **Login using default user**:
+6. **Login using default user**:
 
-    Default user for llmeval username: `username`, password: `password`.
+   Default user for llmeval username: `username`, password: `password`.
 
 To stop the app:
 
@@ -145,23 +148,23 @@ poetry self add poetry-plugin-shell
 
 3. **Comment the following in .env**
 
-    from
+   from
 
-    ```bash
-    # container variables
-    KEYCLOAK_HOST=keycloak
-    CELERY_BROKER_HOST=rabbit-mq
-    PG_HOST=eval-db
-    ```
+   ```bash
+   # container variables
+   KEYCLOAK_HOST=keycloak
+   CELERY_BROKER_HOST=rabbit-mq
+   PG_HOST=eval-db
+   ```
 
-    to
+   to
 
-    ```bash
-    # container variables
-    # KEYCLOAK_HOST=keycloak
-    # CELERY_BROKER_HOST=rabbit-mq
-    # PG_HOST=eval-db
-    ```
+   ```bash
+   # container variables
+   # KEYCLOAK_HOST=keycloak
+   # CELERY_BROKER_HOST=rabbit-mq
+   # PG_HOST=eval-db
+   ```
 
 4. **Start databases and other services:**
 
@@ -193,7 +196,7 @@ poetry self add poetry-plugin-shell
 
 8. **Login using default user**:
 
-    Default user for llmeval username: `username`, password: `password`.
+   Default user for llmeval username: `username`, password: `password`.
 
 #### Keycloak Setup (Optional if you want to override defaults)
 
