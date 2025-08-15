@@ -79,7 +79,7 @@ To run LLM-Eval locally (for evaluation and usage, not development), use our pre
    **Required:**
 
    - Generate the encryption keys set to `CHANGEME` with the respective commands commented next to them in `.env`
-   - Don't forget to set azure openai keys and the `AZURE_OPENAI_EMBEDDING_DEPLOYMENT=`
+   - Don't forget to set azure openai keys and the `AZURE_OPENAI_EMBEDDING_DEPLOYMENT=`, without these the catalog generation will fail.
 
 3. **Enable host networking in docker desktop (for macos users):**
 
