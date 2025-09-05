@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from deepeval import evaluate
-from deepeval.evaluate import AsyncConfig, DisplayConfig, CacheConfig, ErrorConfig
+from deepeval.evaluate import AsyncConfig, DisplayConfig, CacheConfig
 from deepeval.evaluate.types import TestResult as EvalTestResult
 from deepeval.test_case import LLMTestCase
 from loguru import logger
@@ -59,18 +59,11 @@ async def evaluate_test_case_task(
         evaluate_result = evaluate(
             test_cases=[llm_test_case],
             metrics=metrics,
-            async_config=AsyncConfig(
-                run_async=False,
-                max_concurrent=1
-            ),
+            async_config=AsyncConfig(run_async=False, max_concurrent=1),
             display_config=DisplayConfig(
-                print_results=False,
-                show_indicator=SETTINGS.evaluation.show_indicator
+                print_results=False, show_indicator=SETTINGS.evaluation.show_indicator
             ),
-            cache_config=CacheConfig(
-                write_cache=False,
-                use_cache=False
-            ),
+            cache_config=CacheConfig(write_cache=False, use_cache=False),
         )
 
         evaluation_results = _build_evaluation_results(
