@@ -56,6 +56,7 @@ pytest-dotenv = "^0.5.2"
 sqlalchemy-utils = "^0.41.2"
 pytest-env = "^1.1.5"
 pytest-mock = "^3.14.0"
+pillow = "^11.3.0"
 
 
 [build-system]
