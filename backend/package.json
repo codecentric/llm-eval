@@ -1,5 +1,5 @@
 {
-  "name": "rag-eval-backend",
+  "name": "llm-eval-backend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
