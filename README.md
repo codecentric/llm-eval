@@ -152,7 +152,7 @@ poetry self add poetry-plugin-shell
 
    ```bash
    # container variables
-   KEYCLOAK_HOST=keycloak
+   KEYCLOAK_BASE_URL=http://keycloak:8080
    CELERY_BROKER_HOST=rabbit-mq
    PG_HOST=eval-db
    ```
@@ -161,7 +161,7 @@ poetry self add poetry-plugin-shell
 
    ```bash
    # container variables
-   # KEYCLOAK_HOST=keycloak
+   # KEYCLOAK_BASE_URL=http://keycloak:8080
    # CELERY_BROKER_HOST=rabbit-mq
    # PG_HOST=eval-db
    ```
