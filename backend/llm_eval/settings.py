@@ -59,6 +59,7 @@ class EvaluationSettings(BaseSettings, prefix="EVALUATION_"):
 class AuthConfig(BaseSettings):
     algorithms_str: str = Field(alias="AUTH_ALGORITHMS", default="RS256")
     keycloak_base_url: str = Field(default="http://localhost:8080")
+    keycloak_realm: str = Field(default="llm-eval")
 
     @property
     def algorithms(self) -> list[str]:
@@ -66,7 +67,7 @@ class AuthConfig(BaseSettings):
 
     @property
     def jwks_uri(self) -> str:
-        return f"{self.keycloak_base_url}/realms/llm-eval/protocol/openid-connect/certs"
+        return f"{self.keycloak_base_url}/realms/{self.keycloak_realm}/protocol/openid-connect/certs"  # noqa: E501
 
 
 class DeepEvalSettings(BaseSettings, prefix="DEEPEVAL_"):
