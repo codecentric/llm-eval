@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "rag-eval"
+name = "llm-eval"
 version = "0.1.0"
 description = "Rag-Eval Pipeline including QA-Catalog, DeepEval and visualization"
 authors = [
@@ -18,7 +18,6 @@ python-dotenv = "^1.1.0"
 pydantic = "^2.11.1"
 loguru = "^0.7.3"
 pypdf = "^5.4.0"
-deepeval = "2.7.1"
 langchain-openai = "^0.3.11"
 pyyaml = "^6.0.2"
 sqlalchemy = "^2.0.40"
@@ -37,6 +36,7 @@ celery = { extras = ["redis"], version = "^5.4.0" }
 pydantic-settings = "^2.9.1"
 rapidfuzz = "^3.13.0"
 ragas = "^0.3.0"
+deepeval = "3.3.9"
 
 [tool.poetry.group.dev.dependencies]
 psycopg2-binary = "^2.9.9"
@@ -56,6 +56,7 @@ pytest-dotenv = "^0.5.2"
 sqlalchemy-utils = "^0.41.2"
 pytest-env = "^1.1.5"
 pytest-mock = "^3.14.0"
+pillow = "^11.3.0"
 
 
 [build-system]
